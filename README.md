@@ -6,7 +6,7 @@
 
 ## 当前可用内容
 
-P01 提供可重跑的输入准备和共用样本。P02 已完成五节点盘点、Spark 分布式清洗、分区实验和全量日志覆盖审计。P03 已交付工作流画像、连续周面板与按历史截点特征，本地实测 4,112,526 个 run、11,396 个工作流与 59 个 UTC 周。聚类、检测和演示见 [后续阶段](plan.md)。
+P01 提供可重跑的输入准备和共用样本。P02 已完成五节点盘点、Spark 分布式清洗、分区实验和全量日志覆盖审计。P03 已用正式清洗表验收 4,112,526 个 run、11,396 个工作流与 59 个 UTC 周。三台 Worker 两次全量聚合均与独立画像的 106 列逐项一致，四张交付表已在组内 HDFS 发布。聚类、检测和演示见 [后续阶段](plan.md)。
 
 课程资料可从课程群或组内共享目录按以下文件名获取。Git 记录项目代码和文档，原件与生成批次保存在本地或共享存储。
 
@@ -197,8 +197,54 @@ python -m ghawtrace.feature_pipeline --runs-input "$P01_BATCH" --output-root .lo
 ```
 
 - 命令返回 `batch_dir` 与 `reused`。批次目录含四张 Parquet 和 `manifest.json`，记录输入 SHA-256、参数、分步行数、11 项对账结果及产物行数和字节数；重复运行同一输入会复用已完成批次。入口只发现一次样本清单，冻结输入文件清单和“有清单/无清单”状态；发布前核验分片成员、输入快照、样本清单未出现或改写、截点文件哈希未变。
-- 画像以 `(repo_id, workflow_path)` 为键，含事件与 UTC 小时分布、活跃天数、运行间隔、completed run 的耗时与重试分位、跳过率和失败率；进行中/排队的 run 只计入活动类计数和 `open_run_count`。周面板按 UTC 周一对齐 59 周，区分 `complete`、`partial`、`before_first_observation` 和样本覆盖不足时的 `unknown`；`before_first_observation` 只用于完整观测的工作流。`workflow_asof` 只给截点前已出现的工作流出全局行，结果类特征要求 completed、结论非空且 `updated_at` 早于截点，供 P05、P07 复用。字段与分母见[数据口径](technology_stack.md#表的粒度与分析口径)，手算验收见 [test_p03.py](tests/test_p03.py)。
+- 画像以 `(repo_id, workflow_path)` 为键，含事件与 UTC 小时分布、活跃天数、运行间隔、completed run 的耗时分位与重试率、跳过率和失败率；进行中/排队的 run 只计入活动类计数和 `open_run_count`。周面板按 UTC 周一对齐 59 周，区分 `complete`、`partial`、`before_first_observation` 和样本覆盖不足时的 `unknown`；`before_first_observation` 只用于完整观测的工作流。`workflow_asof` 只给截点前已出现的工作流出全局行，结果类特征要求 completed、结论非空且 `updated_at` 早于截点，供 P05、P07 复用。字段与分母见[数据口径](technology_stack.md#表的粒度与分析口径)，手算验收见 [test_p03.py](tests/test_p03.py)。
 - P01 样本会在输入目录内读取 `sample_manifest.json`，把 12 个 cohort 工作流视为完整观测；其余锚点工作流有 run 的周记 `partial`，所有未观测周（包括锚点之前）记 `unknown`（null），不会伪造零运行周或“出现前”。单文件或改名目录可用 `--sample-manifest` 显式传入。`--cutoffs my_cutoffs.parquet` 可指定 `cutoff_id`、`cutoff_utc`（可选 `repo_id`、`workflow_path` 限定单个工作流，两列必须同时为空或同时非空），`--cutoff-grid none` 可跳过截点表。
+
+### 组员取用已验收的全量表
+
+在 node1 的检出目录执行。四张 Parquet 和成功 manifest 共用一个批次，P04 取 `workflow_profile`，P05 取 `workflow_week` 和 `workflow_asof`，事件明细在 `workflow_event_mix`。P06 的 `p02_t04_coverage.json` 位于同一共享根目录。Spark 2 读取时间列时使用下面的入口，程序将打印行数和 UTC 时间范围。
+
+```sh
+HDFS=hdfs://10.176.62.230:9000/data/ghawtrace
+SHARED="$HDFS/group06_accept_xrxGyscu"
+FEATURES="$SHARED/p03-76f186f28bf8fb2208a4b1af2faab4df8011073df778eab7bd3f995dee9063b2"
+/opt/spark/bin/spark-submit --master 'local[1]' --py-files ghawtrace/p02/clean_runs.py \
+  --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
+  --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
+  ghawtrace/p03/read_features.py "$FEATURES"
+```
+
+下游 PySpark 作业用 `--py-files ghawtrace/p03/read_features.py,ghawtrace/p02/clean_runs.py` 提交，沿用上面的 UTC 配置，在代码中执行 `from read_features import read_features` 和 `df = read_features(spark, batch_uri, "workflow_profile")`。Python 3 / PyArrow 可直接读取下载后的 Parquet。
+
+### 复跑 P03-T02 集群验收
+
+在 node1 的项目检出目录运行。每次使用新的 HDFS 输出目录。作业按工作流分组，在实际执行的 Worker 上计算画像，输出带分区、节点和应用 ID 的压缩 JSON 行。
+
+```sh
+HDFS=hdfs://10.176.62.230:9000/data/ghawtrace
+CLEAN_BATCH="$HDFS/p02_t03_run1/batches/app-20261125190005-0027_8644c332"
+WORK=$(mktemp -d)
+SPARK_OUT="$HDFS/p03_$(basename "$WORK")"
+/opt/spark/bin/spark-submit --master spark://10.176.62.226:7077 --deploy-mode client \
+  --executor-cores 2 --executor-memory 1536m --conf spark.cores.max=12 \
+  --conf spark.sql.shuffle.partitions=24 --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
+  --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
+  ghawtrace/p03/spark_profile.py "$CLEAN_BATCH" "$SPARK_OUT"
+hdfs dfs -get "$CLEAN_BATCH/runs_clean" "$WORK/runs_clean"
+hdfs dfs -get "$CLEAN_BATCH/_SUCCESS" "$WORK/p02-marker.json"
+hdfs dfs -get "$SPARK_OUT" "$WORK/spark-out"
+(cd "$WORK/runs_clean" && sha256sum *.parquet) > "$WORK/clean.sha256"
+echo "$WORK"
+```
+
+将该工作目录复制到已安装本仓库依赖的 Python 3 开发机，把 `WORK` 设为复制后的位置，再从仓库根目录运行。命令先重建四张 Parquet，再检查输入摘要、跨节点执行、每个工作流的列值和空值。通过时输出 `mismatches: 0`。
+
+```sh
+python -m ghawtrace.feature_pipeline --runs-input "$WORK/runs_clean" --output-root "$WORK/reference"
+python -m ghawtrace.p03.verify_cluster --reference "$WORK"/reference/p03-* \
+  --spark-output "$WORK/spark-out" --p02-marker "$WORK/p02-marker.json" \
+  --clean-sha256 "$WORK/clean.sha256" --report "$WORK/acceptance.json"
+```
 
 ### 教师脚本双分片抽查（可选）
 

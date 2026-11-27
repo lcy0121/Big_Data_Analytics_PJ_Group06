@@ -1,0 +1,137 @@
+{
+  "application_id": "app-20261126234418-0036",
+  "clean_inventory_sha256": "9336296a13f20f345c351f2b27d2d0499c8a98d8529be20ca17f2bc5b1620a91",
+  "compared_cells": 1207976,
+  "input_shards": 36,
+  "mismatches": 0,
+  "numeric_tolerance": {
+    "absolute": 1e-12,
+    "relative": 1e-12
+  },
+  "outputs": {
+    "workflow_asof.parquet": {
+      "bytes": 6395840,
+      "rows": 206141,
+      "sha256": "a63224e044e9d5527be4df306eef5505b72fd4f0ededd738c93b0c7f8a9ab733"
+    },
+    "workflow_event_mix.parquet": {
+      "bytes": 155995,
+      "rows": 15332,
+      "sha256": "5bf3fb5ffa6a2b60535dfac10fc031ed076c3839b20e8185a9273766711fd87f"
+    },
+    "workflow_profile.parquet": {
+      "bytes": 2053815,
+      "rows": 11396,
+      "sha256": "885f0a652cce6c5effe25ff4f7b91e5ed141a3a127d215f09df0a1ea9d33231e"
+    },
+    "workflow_week.parquet": {
+      "bytes": 1344941,
+      "rows": 672364,
+      "sha256": "d431066918d0455f1aaa8fb0a38d1c5337fbfe6dede79f4b096675f8af9de9a4"
+    }
+  },
+  "p02_batch": "app-20261125190005-0027_8644c332",
+  "p03_batch": "p03-76f186f28bf8fb2208a4b1af2faab4df8011073df778eab7bd3f995dee9063b2",
+  "profile_columns": 106,
+  "reference_checks": {
+    "asof_prior_monotonic": {
+      "ok": true,
+      "rows": 206141
+    },
+    "asof_prior_within_profile": {
+      "ok": true,
+      "workflows_over_profile": 0
+    },
+    "asof_workflows": {
+      "asof_workflows": 11377,
+      "ok": true
+    },
+    "no_unmasked_nan": {
+      "nan_cells": 0,
+      "ok": true
+    },
+    "profile_run_count": {
+      "input_runs": 4112526,
+      "ok": true,
+      "profile_runs": 4112526
+    },
+    "profile_workflows": {
+      "input_workflows": 11396,
+      "ok": true,
+      "profile_rows": 11396
+    },
+    "week_grid": {
+      "ok": true,
+      "week_rows": 672364,
+      "weeks": 59,
+      "workflows": 11396
+    },
+    "week_keys_match_profile": {
+      "ok": true,
+      "profile_rows": 11396,
+      "week_workflows": 11396
+    },
+    "week_per_workflow_sums": {
+      "mismatched_workflows": 0,
+      "ok": true
+    },
+    "week_run_count": {
+      "input_runs": 4112526,
+      "ok": true,
+      "week_runs": 4112526
+    },
+    "week_states": {
+      "ok": true,
+      "states": [
+        "before_first_observation",
+        "complete",
+        "partial"
+      ]
+    }
+  },
+  "runs": 4112526,
+  "spark_part_files": 24,
+  "status": "success",
+  "workers": {
+    "node2": {
+      "partitions": [
+        0,
+        5,
+        6,
+        11,
+        20
+      ],
+      "workflows": 2422
+    },
+    "node3": {
+      "partitions": [
+        1,
+        3,
+        7,
+        9,
+        12,
+        13,
+        15,
+        16,
+        18,
+        19,
+        22
+      ],
+      "workflows": 5203
+    },
+    "node4": {
+      "partitions": [
+        2,
+        4,
+        8,
+        10,
+        14,
+        17,
+        21,
+        23
+      ],
+      "workflows": 3771
+    }
+  },
+  "workflows": 11396
+}

@@ -17,9 +17,9 @@
 
 | 上游项目 / 包 | 使用范围 | 当前版本依据 | 上游主许可证与依据 |
 |---|---|---|---|
-| Apache Spark / PySpark（含 Spark SQL、MLlib） | 分布式清洗、特征、聚类 | P02固定并实测2.0.0 | Apache-2.0，发行版还带有组件声明。[LICENSE](https://github.com/apache/spark/blob/master/LICENSE) · [NOTICE](https://github.com/apache/spark/blob/master/NOTICE) |
-| Apache Arrow / pyarrow | 教师脚本、P01 与 P03 的 Parquet 读写 | P01 固定 25.0.1；P03 在 16.1.0 与 25.0.1 上复核，结果一致，集群待锁定 | Apache-2.0，随附组件许可见文件后部。[LICENSE](https://github.com/apache/arrow/blob/main/LICENSE.txt) |
-| NumPy / numpy | P03 分位数、分组统计与周面板 | 本地实测 1.26.3，与 PyArrow 25.0.1 联测；集群待锁定 | BSD-3-Clause。[LICENSE](https://github.com/numpy/numpy/blob/main/LICENSE.txt) |
+| Apache Spark / PySpark（含 Spark SQL、MLlib） | 分布式清洗、特征、聚类 | P02 清洗、P03 全量画像和下游读表实测 2.0.0 | Apache-2.0，发行版还带有组件声明。[LICENSE](https://github.com/apache/spark/blob/master/LICENSE) · [NOTICE](https://github.com/apache/spark/blob/master/NOTICE) |
+| Apache Arrow / pyarrow | 教师脚本、P01–P03 的本地 Parquet 读写 | P01 固定 25.0.1；P03 在 16.1.0 与 25.0.1 上复核，结果一致；P02 覆盖及 P03 独立复核使用 25.0.1 | Apache-2.0，随附组件许可见文件后部。[LICENSE](https://github.com/apache/arrow/blob/main/LICENSE.txt) |
+| NumPy / numpy | P03 分位数、分组统计与周面板 | 本地实测 1.26.3，与 PyArrow 25.0.1 联测；集群画像使用 Python 标准库 | BSD-3-Clause。[LICENSE](https://github.com/numpy/numpy/blob/main/LICENSE.txt) |
 | SQLite（CPython sqlite3） | P02-T04 在本地磁盘核对 run 与 attempt | 本地 SQLite 3.53.1，随 Python 环境调用 | SQLite 核心为公有领域。[上游声明](https://sqlite.org/copyright.html) |
 | pandas | 教师读取示例、有限规模的结果表 | 本地实测 2.2.3，集群待锁定 | BSD-3-Clause。[LICENSE](https://github.com/pandas-dev/pandas/blob/main/LICENSE) |
 | DuckDB / duckdb | 教师 SQL 接口、独立复算与结果查询 | 教师脚本已引用，项目版本待锁定 | MIT。[LICENSE](https://github.com/duckdb/duckdb/blob/main/LICENSE) |

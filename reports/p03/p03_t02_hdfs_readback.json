@@ -1,0 +1,35 @@
+{
+  "hdfs_batch": "/data/ghawtrace/group06_accept_xrxGyscu/p03-76f186f28bf8fb2208a4b1af2faab4df8011073df778eab7bd3f995dee9063b2",
+  "hdfs_spark_profiles": [
+    "/data/ghawtrace/p03_group06_xrxGyscu",
+    "/data/ghawtrace/p03_group06_xrxGyscu_repeat"
+  ],
+  "p03_batch": "p03-76f186f28bf8fb2208a4b1af2faab4df8011073df778eab7bd3f995dee9063b2",
+  "reader": "ghawtrace/p03/read_features.py",
+  "spark_version": "2.0.0",
+  "status": "success",
+  "tables": {
+    "workflow_asof": {
+      "cutoff_utc_max": "2026-09-21 00:00:00",
+      "cutoff_utc_min": "2025-08-18 00:00:00",
+      "rows": 206141,
+      "window_end_utc_max": "2026-09-21 00:00:00",
+      "window_end_utc_min": "2025-08-18 00:00:00",
+      "window_start_utc_max": "2026-09-20 22:24:05",
+      "window_start_utc_min": "2025-08-14 10:53:05"
+    },
+    "workflow_event_mix": {
+      "rows": 15332
+    },
+    "workflow_profile": {
+      "first_seen_utc_max": "2026-09-21 19:51:55",
+      "first_seen_utc_min": "2025-08-14 10:53:05",
+      "last_seen_utc_max": "2026-09-21 20:38:02",
+      "last_seen_utc_min": "2025-08-22 19:02:06",
+      "rows": 11396
+    },
+    "workflow_week": {
+      "rows": 672364
+    }
+  }
+}
