@@ -1,6 +1,10 @@
 import unittest
 
+import pyarrow as pa
+import pyarrow.dataset as ds
+
 from ghawtrace.p05.score_runs import FIELDS, score_partition
+from ghawtrace.p05.verify_scores import verified_worker_rows
 
 
 def run(run_id, when, seconds=10., attempts=1, status="completed", conclusion="success", repo=1):
@@ -14,6 +18,19 @@ def scored(rows):
 
 
 class RunScores(unittest.TestCase):
+    def test_worker_breakdown_detects_swapped_groups_with_matching_totals(self):
+        normal = dict(worker="node2", score_status="scored", reason="within_baseline")
+        skipped = dict(worker="node3", score_status="unscored", reason="skipped")
+        batch = pa.RecordBatch.from_pylist([normal, skipped])
+        scores = ds.dataset([batch, batch])
+        manifest = dict(rows=4, breakdown=[dict(normal, count=2), dict(skipped, count=2)])
+        self.assertEqual(verified_worker_rows(scores, manifest, "full"), {"node2": 2, "node3": 2})
+
+        manifest["breakdown"] = [dict(normal, worker="node3", count=2),
+                                 dict(skipped, worker="node2", count=2)]
+        with self.assertRaisesRegex(ValueError, "Worker/status/reason"):
+            verified_worker_rows(scores, manifest, "full")
+
     def test_ties_strictly_prior_visibility_and_future_invariance(self):
         seed = [run(i, "02") for i in range(1, 6)]
         tied = [run(6, "03.000001", 11., 2), run(7, "03.000001", 200.)]

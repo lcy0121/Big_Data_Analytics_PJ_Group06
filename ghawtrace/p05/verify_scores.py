@@ -8,6 +8,7 @@ import math
 from pathlib import Path
 from statistics import median
 
+import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.dataset as ds
 
@@ -134,6 +135,30 @@ def compare_full_outputs(first, second):
     return 1 + len(columns)
 
 
+def verified_worker_rows(scores, manifest, mode):
+    """Reconcile persisted worker/status/reason counts with the Spark manifest."""
+    keys = ["worker", "score_status", "reason"]
+    stored = Counter()
+    for batch in scores.to_batches(columns=keys):
+        groups = pa.Table.from_batches([batch]).group_by(keys).aggregate([([], "count_all")])
+        for row in groups.to_pylist():
+            stored[row["worker"], row["score_status"], row["reason"]] += row["count_all"]
+
+    reported = Counter()
+    for row in manifest["breakdown"]:
+        reported[row["worker"], row["score_status"], row["reason"]] += row["count"]
+    if dict(stored) != dict(reported):
+        raise ValueError(f"Worker/status/reason counts differ from stored scores for {mode}")
+
+    workers = Counter()
+    for (worker, _, _), count in stored.items():
+        workers[worker] += count
+    if (not all(workers) or sum(workers.values()) != manifest["rows"]
+            or (mode != "sample" and len(workers) < 2)):
+        raise ValueError(f"Worker evidence differs from stored scores for {mode}")
+    return dict(workers)
+
+
 def verify_cluster_handoff(local_batch, cluster_batches):
     local, local_table = read_batch(local_batch, "full")
     runs = {}
@@ -144,15 +169,7 @@ def verify_cluster_handoff(local_batch, cluster_batches):
         if (manifest["clean_inventory_sha256"] != local["clean_inventory_sha256"]
                 or manifest["p02_batch"] != local["p02_batch"]):
             raise ValueError("Cluster and local P02 inputs differ")
-        # Count the worker field carried by actual persisted score rows.
-        counts = table.to_table(columns=["worker"])["worker"].value_counts().to_pylist()
-        workers = {row["values"]: row["counts"] for row in counts}
-        reported = Counter()
-        for row in manifest["breakdown"]:
-            reported[row["worker"]] += row["count"]
-        if (not all(workers) or workers != dict(reported) or sum(workers.values()) != manifest["rows"]
-                or (mode != "sample" and len(workers) < 2)):
-            raise ValueError(f"Worker evidence differs from stored scores for {mode}")
+        workers = verified_worker_rows(table, manifest, mode)
         runs[mode] = {"hdfs_batch": manifest["output_uri"], "worker_rows": workers}
     cluster, cluster_table = read_batch(cluster_batches["full"], "full")
     if cluster["rows"] != local["rows"]:

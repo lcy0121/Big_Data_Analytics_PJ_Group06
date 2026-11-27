@@ -13,7 +13,7 @@ P00–P03、P05-T01 已验收。P01 提供共用样本，P02 完成五节点盘�
 | 材料 | 内容 |
 |---|---|
 | `大数据分析技术项目-2026版.pptx` | 第 4 页是选题，第 5–6 页是集群、汇报与提交要求 |
-| `GHAWTrace_ref/runs.rar` | 165 个 Parquet 分片，4,112,526 个唯一 run，覆盖 2,969 个仓库和 11,396 个有记录的工作流 |
+| `GHAWTrace_ref/runs.rar` | 165 个 Parquet 2.6 分片（19 列，ZSTD 压缩），4,112,526 个唯一 run，覆盖 2,969 个仓库和 11,396 个有记录的工作流 |
 | `GHAWTrace_ref/logs.rar` | 92 个仓库 TAR，内含 30,427 个非空 attempt ZIP，对应 30,393 个 run 和 475 个工作流，均可关联运行表 |
 | `GHAWTrace_ref/2611.06866v1.pdf` | 采集、日志留存与案例。25,014 个核验工作流中有 13,618 个没有观测到运行 |
 | `GHAWTrace_ref/read_runs.py` | 教师提供的整表、逐分片及 DuckDB SQL 示例，默认使用 Windows 路径 |
@@ -211,7 +211,7 @@ score "$OUT/full"
 score "$OUT/repeat" --partitions 17
 ```
 
-用 `hdfs dfs -get` 分别取回三个完整批次，在 Python 3 开发机将 `verify_scores` 的三个批次参数指向导出目录，加 `--compare-local-full 本机全量批次目录`，核对跨版本逐键结果及各 Worker 行数。[集群验收](reports/p05/p05_t01_cluster_acceptance.json) · [HDFS 独立读回](reports/p05/p05_t01_hdfs_readback.json)
+用 `hdfs dfs -get` 分别取回三个完整批次，在 Python 3 开发机将 `verify_scores` 的三个批次参数指向导出目录，加 `--compare-local-full 本机全量批次目录`。程序对齐跨版本业务字段，并从 Parquet 统计各 Worker 下每种评分状态和原因的行数，与作业清单逐组核对。[集群验收](reports/p05/p05_t01_cluster_acceptance.json) · [HDFS 独立读回](reports/p05/p05_t01_hdfs_readback.json)
 
 ### 教师脚本双分片抽查（可选）
 
@@ -245,4 +245,4 @@ PY
 
 ## 课程交付
 
-每组最多六人，在集群搭建实验环境，报告与系统演示合计 20–30 分钟。PPT 说明完成内容、过程、数据集、经验和分工，每人展示自己的技术实现与完成证据。提交**源代码及使用说明、PPT、项目文档**，截止时间与入口以教师通知为准。
+总评中平时成绩占 20%，课程 PJ 占 80%（`week1.1.大数据分析技术.pptx` 第 36 页）。每组最多六人，在集群搭建实验环境，报告与系统演示合计 20–30 分钟。PPT 说明完成内容、过程、数据集、经验和分工，每人展示自己的技术实现与完成证据。提交**源代码及使用说明、PPT、项目文档**，截止时间与入口以教师通知为准。

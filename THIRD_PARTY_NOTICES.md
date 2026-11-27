@@ -10,6 +10,7 @@
 | *GH-AWTrace: A Large-Scale Dataset of GitHub Agentic Workflow Execution Logs* | 文档、报告、PPT 引用上述五位作者（依序）、全名、2026、arXiv:2611.06866v1，说明采集方法和限制。复用图表或长段材料另核来源。[论文 v1](https://arxiv.org/abs/2611.06866v1) |
 | `GHAWTrace_ref/read_runs.py` | 教师提供，用于抽样、字段参考。独立版本、作者及开源许可未标明，提交或公开衍生代码须注明来源并遵循课堂允许范围。 |
 | `大数据分析技术项目-2026版.pptx` | 课程分发，用于核对选题与考核，未见单独许可证。 |
+| 大数据分析技术周课件（PPT/PPTX） | 教师分发。项目按原文件名及页码引用教学方法，课件原件由课程渠道提供。[课程索引](technology_stack.md#课程资料与查阅路径) |
 
 ## 分析、实验与演示的直接依赖
 

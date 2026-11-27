@@ -20,14 +20,17 @@
 
 ## 课程资料与查阅路径
 
-按原文件名和幻灯片页码查找课程群或组内共享课件，开发时对照实际发行版。
+页码按课程原件从 1 起算。项目课件《大数据分析技术项目-2026版》第 4–6 页规定选题、集群与交付要求。周课件提供方法依据。按 `week1.1.大数据分析技术.pptx` 第 32 页的分类，现有清洗、画像和评分属于离线分析，P08 计划在已发布结果上做交互式查询。
 
 | 对应任务 | 课程资料 | 项目中的用法与对照入口 |
 |---|---|---|
-| P02 集群与存储 | `week1.2.Hadoop概述.pptx` 第 17 页，`week2.1.HDFS.pptx` 第 19–25、44–50、51–54 页，`week6.1.spark-general.pptx` 第 27–30 页 | 根据资源管理器、存储和执行器的职责划分节点。使用 HDFS，核验输入与产物对各节点可见。按仓库保留日志 TAR，避免上传大量单条日志文件。[Spark 集群部署](https://spark.apache.org/docs/latest/cluster-overview.html) |
-| P02-T05、P03、P05-T01 分区与窗口 | `week2.2.Mapreduce.pptx` 第 16、20–29 页，`week6.2.spark原理.pptx` 第 14–21、26–27 页 | 用按键重分区、宽依赖、Shuffle 和 Stage 理解聚合与窗口的成本。在同一全量作业比较两种分区设置，记录执行器、Shuffle 和 Stage 耗时。历史窗口依据实际可见时间构造。[Spark Web UI](https://spark.apache.org/docs/latest/web-ui.html) · [Spark SQL 窗口函数](https://spark.apache.org/docs/latest/sql-ref-syntax-qry-select-window.html) |
-| P04 画像聚类 | `week3.2.Kmeans.pptx` 第 3–8 页，`week4.1.机器学习.pptx` 第 50–56 页，`week4.2.聚类.pptx` 第 4–10 页 | 参照“分配到最近中心、重算质心”的迭代关系解释 Spark MLlib 结果。课件对距离和初始中心的讨论用于设计量纲、K 和随机种子的对照实验。[Spark MLlib 聚类](https://spark.apache.org/docs/latest/ml-clustering.html) |
+| P01/P02 列式存储 | `week7.3.parquet.pptx` 第 2–8、12–15 页 | HDFS 提供共享文件，Parquet 组织列，Spark 或 PyArrow 执行计算。行组内按列分块、按页编码和压缩。实测原片为 Parquet 2.6/ZSTD；转码器只读取 19 列中的 13 列，以 Parquet 1.0/Snappy 写给课程 Spark 2。[转码实现](ghawtrace/p02/convert_for_spark2.py) |
+| P02 集群与存储 | `week1.2.Hadoop概述.pptx` 第 11–17 页，`week2.1.HDFS.pptx` 第 19–25、43、45–50、52–54 页，`week6.1.spark-general.pptx` 第 27–31 页 | 本组用 Spark Standalone 的 Master/Worker 调度，node5 提供 HDFS。验证跨节点读写；按仓库保存日志 TAR，减少 HDFS 小文件与元数据开销。[Spark 集群部署](https://spark.apache.org/docs/latest/cluster-overview.html) |
+| P02-T05、P03、P05-T01 分区 | `week2.2.Mapreduce.pptx` 第 16、20–29、44 页，`week6.2.spark原理.pptx` 第 14–21、26–27 页 | 同一键的数据归入同一计算分区。用宽依赖、Shuffle 和 Stage 解释 P02 同一全量聚合在 200/24 分区下的耗时，并用执行器记录核对实际节点。[实验报告](reports/p02/p02_t05_p24_report.json) · [Spark Web UI](https://spark.apache.org/docs/latest/web-ui.html) |
+| P04 画像聚类（计划） | `week3.2.Kmeans.pptx` 第 3–8 页，`week4.1.机器学习.pptx` 第 51–57 页，`week4.2.聚类.pptx` 第 4–10 页 | 样本分配到最近中心，再重算质心。距离受量纲影响，初始中心、离群点及非凸簇会影响解释；用计划中的缩放、多 K、多种子、代表样本和边界样本核验。[Spark MLlib 聚类](https://spark.apache.org/docs/latest/ml-clustering.html) |
+| P05-T01 历史窗口 | `week5.1_stream.pptx` 第 16、18–21 页 | 已发布的评分作业按工作流和最终更新时间排序，维护最近 64 个合格 run 的计数滑动窗口，同一时刻完成的 run 共用此前的窗口。在这个有界窗口内精确算中位数和 MAD，运行方式为 Spark 批处理。[窗口实现](ghawtrace/p05/score_runs.py) |
 | P06–P07 日志文本特征备选 | `week3.1.tfidf.pptx` 第 2–7 页 | 课件区分单篇词频与全语料文档频率。若规则指纹遗漏较多可重复的模式，可把归一化日志模板作为词、run 作为文档，试验只在训练集合拟合的 TF-IDF；现有规则指纹继续提供可回查证据。[Spark MLlib TF-IDF](https://spark.apache.org/docs/latest/ml-features.html#tf-idf) |
+| P05-T01 验收、P08 查询（计划） | `week7.1.交互式查询.pptx` 第 2–6、9–10 页，`week7.2.Dremel.pptx` 第 23、25、27 页 | P05 核验节点产出时只投影 Worker、评分状态、原因三列，逐批分组计数再相加，与 Spark 清单对账。P08 可用同一思路，按工作流和时间筛选、取高分 run，再按证据键定位 attempt 与日志行。[验收实现](ghawtrace/p05/verify_scores.py) |
 
 ## 表的粒度与分析口径
 
