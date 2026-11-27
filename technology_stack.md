@@ -1,14 +1,15 @@
 # 技术栈与数据接口
 
-P01 已在本地实测 CPython 3.12.14 与 PyArrow 25.0.1，后者固定在 [依赖清单](requirements.txt)。P03 以 NumPy 1.26.3 做分组统计，本地实测 CPython 3.12.7、PyArrow 16.1.0 与 25.0.1 两版结果逐表一致。P02 起的选型待实施，五节点配置、版本和资源上限由 P02 实测。各发行版及许可证见 [第三方清单](THIRD_PARTY_NOTICES.md)。
+P01 已在本地实测 CPython 3.12.14 与 PyArrow 25.0.1，后者固定在 [依赖清单](requirements.txt)。P03 以 NumPy 1.26.3 做分组统计，本地实测 CPython 3.12.7、PyArrow 16.1.0 与 25.0.1 两版结果逐表一致。P02 已在五节点实测 Spark 2.0.0 Standalone、Hadoop 2.7.7 HDFS、Oracle JDK 8 和 Python 2.7.5。各发行版及许可证见 [第三方清单](THIRD_PARTY_NOTICES.md)。
 
 ## 按流程选型
 
 | 流程与任务 | 工具 | 输入、处理与输出 | 运行位置和验证 |
 |---|---|---|---|
 | 输入准备（P01） | unar、Python、PyArrow、`tarfile` | 解包 RAR。按列分批读取 Parquet，按仓库 TAR 的成员清单建立 attempt 索引 | 本地实测两种模式，按参数读取源目录。可用教师脚本的 `iter_shards`、`load_runs`（pandas）或 `query`（DuckDB）独立抽查 |
-| 批处理环境（P02） | 集群 Linux、JVM、Apache Spark、PySpark、`spark-submit` | 提交驱动程序并将清洗、聚合、分区写回分发给执行器 | 先盘点五台机器。已有可用 YARN 就沿用；空环境拟用 Spark Standalone，一台协调、四台工作。以实际执行器记录认定多机运行。[集群说明](https://spark.apache.org/docs/latest/cluster-overview.html) |
-| 数据存取与清洗（P02） | 共享存储、Parquet、Spark SQL / DataFrame | 分片投影、类型和 UTC 转换、主键与状态审计、分区落盘。按读取模式比较分区方案，避免按 run 建目录 | 优先用已有 HDFS 或所有节点同路径可访问的共享挂载；没有共享存储时，先在 P02 明确部署可用方案并验证跨节点读写。[Spark Parquet 文档](https://spark.apache.org/docs/latest/sql-data-sources-parquet.html) |
+| 批处理环境（P02） | 集群 Linux、JVM、Apache Spark、PySpark、`spark-submit` | 提交驱动程序并将清洗、聚合、分区写回分发给执行器 | node1 为提交机和 Master，node2–4 为 Worker，node5 提供 HDFS。以实际执行器记录认定多机运行。[集群说明](https://spark.apache.org/docs/latest/cluster-overview.html) |
+| 数据存取与清洗（P02） | 共享存储、Parquet、Spark SQL / DataFrame | 分片投影、类型和 UTC 转换、主键与状态审计、分区落盘。按读取模式比较分区方案，避免按 run 建目录 | Spark 全量清洗使用 HDFS 不可变批次、Snappy Parquet 和 UTC 时间列。[Spark Parquet 文档](https://spark.apache.org/docs/latest/sql-data-sources-parquet.html) |
+| 日志覆盖（P02-T04） | PyArrow 批读、Python tarfile、SQLite 3.53.1（sqlite3） | 独立扫描 TAR 成员与 P01 attempt 索引逐键、大小及重数比对。在临时磁盘库以唯一 run 左连同仓库非空 ZIP，按 UTC 创建月 × 原始 event 汇总 | 同一入口支持样本和全量；完整 TAR 清单、异常项与分母见[覆盖报告](reports/p02/p02_t04_coverage.json) |
 | 特征工程（P03） | PyArrow（`pyarrow.dataset`、`pyarrow.compute`）、NumPy 分组扫描、`ghawtrace/features.py` | 读 P01 批次、P02 清洗表或嵌套分区 Parquet 目录；输入必须含 `status` 列；按 `(repo_id, workflow_path)` 排序分组；P01 样本按 `sample_manifest.json` 的 cohort 区分完整观测与锚点；产出工作流画像、事件构成、连续周面板和按历史截点特征；全部写 Parquet | 本地实测 165 个分片、4,112,526 个 run、11,396 个工作流与 59 个 UTC 周，单进程约 1–2 分钟；手算样例与 11 项对账检查随批次记录。P04–P07 直接读取 Parquet，无需重算 |
 | 聚类（P04） | `pyspark.ml` 的 VectorAssembler、StandardScaler、KMeans、ClusteringEvaluator；scikit-learn 的 adjusted_rand_score | 数值向量 → 缩放 → 拟合多个 K 和种子 → 对照轮廓系数、簇规模、ARI；用原始单位解释中心与代表样本 | Spark 运行聚类；ARI 比较同一组工作流的两套标签。记录距离度量和实际缩放方式。[聚类与评估](https://spark.apache.org/docs/latest/ml-clustering.html) |
 | 运行级异常（P05-T01） | PySpark SQL 窗口与分位数聚合，Python 样本复算 | 一个 run 一行。用同一工作流在评分前已观测到的运行估计耗时中位数、MAD 与重试分布，输出分项、综合分数及原因 | 对零 MAD 约定回退或缺失规则，对跳过及历史不足给出状态。按特征声明精确值或近似分位数的复核容差 |
@@ -52,7 +53,7 @@ P03 批次目录为 `output_root/p03-<sha256>`，含四张 Parquet 与 `manifest
 
 - **时间。** `updated_at - created_at` 表示从创建到最后更新的观测耗时，可能涵盖等待或重跑。报告标清代理量；精确到某执行阶段的结论须用日志时间戳核验。UTC 小时仅支持 UTC 口径的结论。周键为 `created_at_utc` 所属 UTC 周的周一 00:00；完整观测时周面板的 `partial` 只由采集窗口的首末周决定，工作流自身的首末 run 不截断周；样本锚点工作流没有可证明的“出现前”，所有未观测周（含锚点之前）均为 `unknown`。截点特征取 `created_at < cutoff`；已知结果还要求 `status=completed`、结论非空且 `updated_at < cutoff`，耗时和尝试次数也只取 completed 的可见 run，因此追加未来记录不改变旧截点。`status` 是必需列，缺失不能默认 completed。
 - **结果。** 跳过率取 `skipped / 全部 run`。建议失败率定义为 `failure / (success + failure)`，命名为“成功/失败结论中的失败率”；其余结论另列。分母为零记缺失。重试率取 completed 且已知尝试次数的 run 中 `run_attempts > 1` 的比例，重跑次数为尝试次数减一；进行中/排队的 run 不计入这个分母，日志里的进程内重试另算。
-- **P03 特征。** 事件比例按事件计 `event_run_count / run_count`，18 个已知事件加 `other`/`unknown` 两类；`schedule_share` 取 `schedule`，`dispatch_share` 取 `workflow_dispatch + repository_dispatch`，`webhook_share` 为其余事件（含 `workflow_run`、`push`、PR 与 issue 类）。UTC 小时分布为 24 个 `hour_XX_utc_share`，`night_share_utc` 取 0–5 时。活跃天数按 UTC 日期去重；`observation_span_days = last_day - first_day + 1`，`active_day_rate = active_day_count / observation_span_days`，`mean_runs_per_active_day = run_count / active_day_count`，`max_daily_runs` 为同一 UTC 日的最大 run 数。耗时和尝试次数只统计 `status=completed` 的 run；进行中/排队的 run 只计入活动类计数和 `open_run_count`，其耗时计入缺失。间隔为同一工作流按创建时间排序后的相邻差，单 run 无间隔。耗时与间隔分位数用精确线性插值（`numpy.percentile`，method `linear`），非近似分位。小时与深夜结论仅对 UTC 口径成立。
+- **P03 特征。** 事件比例按事件计 `event_run_count / run_count`，18 个已知事件加 `other`/`unknown` 两类；`schedule_share` 取 `schedule`，`dispatch_share` 取 `workflow_dispatch + repository_dispatch`，`webhook_share` 为有效事件中其余类别（排除 unknown，含 `workflow_run`、`push`、PR 与 issue 类）。UTC 小时分布为 24 个 `hour_XX_utc_share`，`night_share_utc` 取 0–5 时。活跃天数按 UTC 日期去重；`observation_span_days = last_day - first_day + 1`，`active_day_rate = active_day_count / observation_span_days`，`mean_runs_per_active_day = run_count / active_day_count`，`max_daily_runs` 为同一 UTC 日的最大 run 数。耗时和尝试次数只统计 `status=completed` 的 run；进行中/排队的 run 只计入活动类计数和 `open_run_count`，其耗时计入缺失。间隔为同一工作流按创建时间排序后的相邻差，单 run 无间隔。耗时与间隔分位数用精确线性插值（`numpy.percentile`，method `linear`），非近似分位。小时与深夜结论仅对 UTC 口径成立。
 - **覆盖。** 运行画像以 11,396 个有 run 的工作流为总体。教师提供的日志子集覆盖 475 个工作流；子集未提供归档、归档缺少目标步骤、已解析且零命中分别编码。对比实验的两组均取同一批可用 run。
 - **时间切分。** 全期画像用于解释整体原型。回测时用 P03 的 `workflow_asof`：全局截点只为当时已出现的工作流出评分行，结果类特征要求 `status=completed`、结论非空且 `updated_at` 早于截点；耗时和尝试次数只取 completed 的可见 run。显式限定 `repo_id`/`workflow_path` 的截点允许冷启动行（`has_prior_runs=false`）。对只保留最新快照的结论、尝试数和耗时，用最后更新时间约束可见性。不能复原的中间 attempt 状态记作未知。
 

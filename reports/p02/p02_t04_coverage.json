@@ -1,0 +1,2086 @@
+{
+  "by_utc_month_event": [
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2025-08",
+      "total_runs": 47
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2025-08",
+      "total_runs": 1
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2025-08",
+      "total_runs": 24
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2025-08",
+      "total_runs": 11
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2025-08",
+      "total_runs": 30
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2025-08",
+      "total_runs": 243
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2025-08",
+      "total_runs": 173
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2025-09",
+      "total_runs": 199
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2025-09",
+      "total_runs": 171
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2025-09",
+      "total_runs": 87
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2025-09",
+      "total_runs": 33
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2025-09",
+      "total_runs": 617
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2025-09",
+      "total_runs": 420
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2025-09",
+      "total_runs": 621
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2025-09",
+      "total_runs": 149
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2025-10",
+      "total_runs": 89
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2025-10",
+      "total_runs": 123
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2025-10",
+      "total_runs": 7570
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2025-10",
+      "total_runs": 786
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2025-10",
+      "total_runs": 947
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2025-10",
+      "total_runs": 1109
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2025-10",
+      "total_runs": 1376
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2025-10",
+      "total_runs": 1065
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2025-10",
+      "total_runs": 1436
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2025-10",
+      "total_runs": 197
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2025-11",
+      "total_runs": 18
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2025-11",
+      "total_runs": 388
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2025-11",
+      "total_runs": 15661
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2025-11",
+      "total_runs": 473
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2025-11",
+      "total_runs": 7634
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2025-11",
+      "total_runs": 881
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2025-11",
+      "total_runs": 2425
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2025-11",
+      "total_runs": 2180
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2025-11",
+      "total_runs": 659
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2025-11",
+      "total_runs": 96
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2025-12",
+      "total_runs": 19
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2025-12",
+      "total_runs": 491
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2025-12",
+      "total_runs": 26866
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2025-12",
+      "total_runs": 561
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2025-12",
+      "total_runs": 8529
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2025-12",
+      "total_runs": 1475
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2025-12",
+      "total_runs": 1880
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2025-12",
+      "total_runs": 5161
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2025-12",
+      "total_runs": 571
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2025-12",
+      "total_runs": 165
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2026-01",
+      "total_runs": 43
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-01",
+      "total_runs": 253
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2026-01",
+      "total_runs": 40691
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2026-01",
+      "total_runs": 3377
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2026-01",
+      "total_runs": 18879
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-01",
+      "total_runs": 1390
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2026-01",
+      "total_runs": 2936
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-01",
+      "total_runs": 1
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2026-01",
+      "total_runs": 9825
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2026-01",
+      "total_runs": 749
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2026-01",
+      "total_runs": 1701
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "create",
+      "month": "2026-02",
+      "total_runs": 3
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2026-02",
+      "total_runs": 118
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-02",
+      "total_runs": 445
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2026-02",
+      "total_runs": 37844
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2026-02",
+      "total_runs": 37765
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2026-02",
+      "total_runs": 22666
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-02",
+      "total_runs": 233
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-02",
+      "total_runs": 2195
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_target",
+      "month": "2026-02",
+      "total_runs": 197
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2026-02",
+      "total_runs": 1768
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-02",
+      "total_runs": 4
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "repository_dispatch",
+      "month": "2026-02",
+      "total_runs": 6
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2026-02",
+      "total_runs": 25095
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2026-02",
+      "total_runs": 2481
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2026-02",
+      "total_runs": 5233
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "create",
+      "month": "2026-03",
+      "total_runs": 4
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2026-03",
+      "total_runs": 38
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-03",
+      "total_runs": 272
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2026-03",
+      "total_runs": 49638
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2026-03",
+      "total_runs": 88790
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2026-03",
+      "total_runs": 28179
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-03",
+      "total_runs": 345
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-03",
+      "total_runs": 2470
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_target",
+      "month": "2026-03",
+      "total_runs": 1200
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2026-03",
+      "total_runs": 5696
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-03",
+      "total_runs": 5
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "repository_dispatch",
+      "month": "2026-03",
+      "total_runs": 18
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2026-03",
+      "total_runs": 64315
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2026-03",
+      "total_runs": 4245
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2026-03",
+      "total_runs": 5775
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "create",
+      "month": "2026-04",
+      "total_runs": 7
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "deployment_status",
+      "month": "2026-04",
+      "total_runs": 569
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2026-04",
+      "total_runs": 47
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-04",
+      "total_runs": 168
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2026-04",
+      "total_runs": 65075
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2026-04",
+      "total_runs": 50773
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2026-04",
+      "total_runs": 38100
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-04",
+      "total_runs": 37
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-04",
+      "total_runs": 4930
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_target",
+      "month": "2026-04",
+      "total_runs": 8647
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2026-04",
+      "total_runs": 2091
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-04",
+      "total_runs": 20
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2026-04",
+      "total_runs": 75573
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2026-04",
+      "total_runs": 4068
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2026-04",
+      "total_runs": 5521
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "check_run",
+      "month": "2026-05",
+      "total_runs": 40873
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "deployment_status",
+      "month": "2026-05",
+      "total_runs": 4396
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2026-05",
+      "total_runs": 13
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-05",
+      "total_runs": 145
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2026-05",
+      "total_runs": 124039
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issues",
+      "month": "2026-05",
+      "total_runs": 25373
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request",
+      "month": "2026-05",
+      "total_runs": 42652
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-05",
+      "total_runs": 1126
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-05",
+      "total_runs": 9679
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_target",
+      "month": "2026-05",
+      "total_runs": 59373
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2026-05",
+      "total_runs": 5501
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-05",
+      "total_runs": 4
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "repository_dispatch",
+      "month": "2026-05",
+      "total_runs": 6
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "schedule",
+      "month": "2026-05",
+      "total_runs": 76500
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2026-05",
+      "total_runs": 6845
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2026-05",
+      "total_runs": 5720
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "check_run",
+      "month": "2026-06",
+      "total_runs": 272049
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "check_suite",
+      "month": "2026-06",
+      "total_runs": 974
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "create",
+      "month": "2026-06",
+      "total_runs": 4
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "deployment_status",
+      "month": "2026-06",
+      "total_runs": 3807
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion",
+      "month": "2026-06",
+      "total_runs": 681
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-06",
+      "total_runs": 90
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "issue_comment",
+      "month": "2026-06",
+      "total_runs": 77293
+    },
+    {
+      "coverage_rate": 0.0005095770510476304,
+      "covered_runs": 17,
+      "event": "issues",
+      "month": "2026-06",
+      "total_runs": 33361
+    },
+    {
+      "coverage_rate": 0.00035391270153362173,
+      "covered_runs": 18,
+      "event": "pull_request",
+      "month": "2026-06",
+      "total_runs": 50860
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-06",
+      "total_runs": 1711
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-06",
+      "total_runs": 4754
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_target",
+      "month": "2026-06",
+      "total_runs": 63073
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "push",
+      "month": "2026-06",
+      "total_runs": 3122
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-06",
+      "total_runs": 31
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "repository_dispatch",
+      "month": "2026-06",
+      "total_runs": 23
+    },
+    {
+      "coverage_rate": 8.524007257583322e-05,
+      "covered_runs": 7,
+      "event": "schedule",
+      "month": "2026-06",
+      "total_runs": 82121
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_dispatch",
+      "month": "2026-06",
+      "total_runs": 5433
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "workflow_run",
+      "month": "2026-06",
+      "total_runs": 17339
+    },
+    {
+      "coverage_rate": 0.0002671653753673524,
+      "covered_runs": 8,
+      "event": "check_run",
+      "month": "2026-07",
+      "total_runs": 29944
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "check_suite",
+      "month": "2026-07",
+      "total_runs": 2094
+    },
+    {
+      "coverage_rate": 0.0015455950540958269,
+      "covered_runs": 5,
+      "event": "deployment_status",
+      "month": "2026-07",
+      "total_runs": 3235
+    },
+    {
+      "coverage_rate": 0.08738394320043692,
+      "covered_runs": 160,
+      "event": "discussion",
+      "month": "2026-07",
+      "total_runs": 1831
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-07",
+      "total_runs": 117
+    },
+    {
+      "coverage_rate": 0.0016815790656894924,
+      "covered_runs": 374,
+      "event": "issue_comment",
+      "month": "2026-07",
+      "total_runs": 222410
+    },
+    {
+      "coverage_rate": 0.010481152313821636,
+      "covered_runs": 684,
+      "event": "issues",
+      "month": "2026-07",
+      "total_runs": 65260
+    },
+    {
+      "coverage_rate": 0.009114145913970641,
+      "covered_runs": 624,
+      "event": "pull_request",
+      "month": "2026-07",
+      "total_runs": 68465
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-07",
+      "total_runs": 3489
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-07",
+      "total_runs": 12830
+    },
+    {
+      "coverage_rate": 0.004362495912482535,
+      "covered_runs": 587,
+      "event": "pull_request_target",
+      "month": "2026-07",
+      "total_runs": 134556
+    },
+    {
+      "coverage_rate": 0.027684159845931634,
+      "covered_runs": 115,
+      "event": "push",
+      "month": "2026-07",
+      "total_runs": 4154
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-07",
+      "total_runs": 16
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "repository_dispatch",
+      "month": "2026-07",
+      "total_runs": 17
+    },
+    {
+      "coverage_rate": 0.024079320113314446,
+      "covered_runs": 2516,
+      "event": "schedule",
+      "month": "2026-07",
+      "total_runs": 104488
+    },
+    {
+      "coverage_rate": 0.17101010795571753,
+      "covered_runs": 2487,
+      "event": "workflow_dispatch",
+      "month": "2026-07",
+      "total_runs": 14543
+    },
+    {
+      "coverage_rate": 0.0004622337875778949,
+      "covered_runs": 27,
+      "event": "workflow_run",
+      "month": "2026-07",
+      "total_runs": 58412
+    },
+    {
+      "coverage_rate": 0.0005630463772410728,
+      "covered_runs": 19,
+      "event": "check_run",
+      "month": "2026-08",
+      "total_runs": 33745
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "check_suite",
+      "month": "2026-08",
+      "total_runs": 5162
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "create",
+      "month": "2026-08",
+      "total_runs": 8
+    },
+    {
+      "coverage_rate": 0.0035587188612099642,
+      "covered_runs": 10,
+      "event": "deployment_status",
+      "month": "2026-08",
+      "total_runs": 2810
+    },
+    {
+      "coverage_rate": 0.1958762886597938,
+      "covered_runs": 171,
+      "event": "discussion",
+      "month": "2026-08",
+      "total_runs": 873
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-08",
+      "total_runs": 184
+    },
+    {
+      "coverage_rate": 0.0013673940763829625,
+      "covered_runs": 415,
+      "event": "issue_comment",
+      "month": "2026-08",
+      "total_runs": 303497
+    },
+    {
+      "coverage_rate": 0.011822258459029759,
+      "covered_runs": 725,
+      "event": "issues",
+      "month": "2026-08",
+      "total_runs": 61325
+    },
+    {
+      "coverage_rate": 0.01797301537496078,
+      "covered_runs": 1432,
+      "event": "pull_request",
+      "month": "2026-08",
+      "total_runs": 79675
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-08",
+      "total_runs": 1765
+    },
+    {
+      "coverage_rate": 6.269592476489028e-05,
+      "covered_runs": 2,
+      "event": "pull_request_review_comment",
+      "month": "2026-08",
+      "total_runs": 31900
+    },
+    {
+      "coverage_rate": 0.0021215647659117358,
+      "covered_runs": 237,
+      "event": "pull_request_target",
+      "month": "2026-08",
+      "total_runs": 111710
+    },
+    {
+      "coverage_rate": 0.15320197044334977,
+      "covered_runs": 311,
+      "event": "push",
+      "month": "2026-08",
+      "total_runs": 2030
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-08",
+      "total_runs": 50
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "repository_dispatch",
+      "month": "2026-08",
+      "total_runs": 16
+    },
+    {
+      "coverage_rate": 0.04199824644771804,
+      "covered_runs": 6275,
+      "event": "schedule",
+      "month": "2026-08",
+      "total_runs": 149411
+    },
+    {
+      "coverage_rate": 0.2877128294111268,
+      "covered_runs": 2653,
+      "event": "workflow_dispatch",
+      "month": "2026-08",
+      "total_runs": 9221
+    },
+    {
+      "coverage_rate": 0.000802484730498878,
+      "covered_runs": 54,
+      "event": "workflow_run",
+      "month": "2026-08",
+      "total_runs": 67291
+    },
+    {
+      "coverage_rate": 0.00027988338192419824,
+      "covered_runs": 12,
+      "event": "check_run",
+      "month": "2026-09",
+      "total_runs": 42875
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "check_suite",
+      "month": "2026-09",
+      "total_runs": 6700
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "create",
+      "month": "2026-09",
+      "total_runs": 7
+    },
+    {
+      "coverage_rate": 0.012048192771084338,
+      "covered_runs": 21,
+      "event": "deployment_status",
+      "month": "2026-09",
+      "total_runs": 1743
+    },
+    {
+      "coverage_rate": 0.21714285714285714,
+      "covered_runs": 190,
+      "event": "discussion",
+      "month": "2026-09",
+      "total_runs": 875
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "discussion_comment",
+      "month": "2026-09",
+      "total_runs": 188
+    },
+    {
+      "coverage_rate": 0.002438334095312738,
+      "covered_runs": 560,
+      "event": "issue_comment",
+      "month": "2026-09",
+      "total_runs": 229665
+    },
+    {
+      "coverage_rate": 0.016891764082775318,
+      "covered_runs": 893,
+      "event": "issues",
+      "month": "2026-09",
+      "total_runs": 52866
+    },
+    {
+      "coverage_rate": 0.015657620041753653,
+      "covered_runs": 1065,
+      "event": "pull_request",
+      "month": "2026-09",
+      "total_runs": 68018
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review",
+      "month": "2026-09",
+      "total_runs": 1262
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "pull_request_review_comment",
+      "month": "2026-09",
+      "total_runs": 23252
+    },
+    {
+      "coverage_rate": 0.0016226471616156573,
+      "covered_runs": 130,
+      "event": "pull_request_target",
+      "month": "2026-09",
+      "total_runs": 80116
+    },
+    {
+      "coverage_rate": 0.05089538171536286,
+      "covered_runs": 108,
+      "event": "push",
+      "month": "2026-09",
+      "total_runs": 2122
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "release",
+      "month": "2026-09",
+      "total_runs": 31
+    },
+    {
+      "coverage_rate": 0.0,
+      "covered_runs": 0,
+      "event": "repository_dispatch",
+      "month": "2026-09",
+      "total_runs": 5
+    },
+    {
+      "coverage_rate": 0.040506016544309686,
+      "covered_runs": 4265,
+      "event": "schedule",
+      "month": "2026-09",
+      "total_runs": 105293
+    },
+    {
+      "coverage_rate": 0.10801897903556887,
+      "covered_runs": 3210,
+      "event": "workflow_dispatch",
+      "month": "2026-09",
+      "total_runs": 29717
+    },
+    {
+      "coverage_rate": 0.00013010950883660414,
+      "covered_runs": 6,
+      "event": "workflow_run",
+      "month": "2026-09",
+      "total_runs": 46115
+    }
+  ],
+  "input_sha256": {
+    "attempt_index.parquet": "6aa3818e854828d19f013e86be9e01216849ba53e12bd23246395ed0e1035c4e",
+    "runs_input.parquet": "9907ba1983f35d6fc36c976a68454f91f79f1735a1914c4a93331ccc9e87ccd2"
+  },
+  "issues": {
+    "duplicate_attempt_extra_entries": 0,
+    "empty_zip_members": 0,
+    "malformed_members": 0,
+    "orphan_zip_members": 0,
+    "p01_index_rows_extra": 0,
+    "p01_index_rows_missing": 0,
+    "repo_mismatch_members": 0
+  },
+  "mode": "full",
+  "p01_batch": "full-7ad7075ddaffa6b22dbc62527fef47fd39aec7373769c1ea70be6c2ce1b76ceb",
+  "status": "success",
+  "tar_inventory": [
+    {
+      "covered_runs": 1471,
+      "covered_workflows": 7,
+      "distinct_run_ids": 1471,
+      "repo_id": 1000362065,
+      "tar": "1000362065.tar",
+      "zip_members": 1473
+    },
+    {
+      "covered_runs": 10,
+      "covered_workflows": 2,
+      "distinct_run_ids": 10,
+      "repo_id": 1000852836,
+      "tar": "1000852836.tar",
+      "zip_members": 10
+    },
+    {
+      "covered_runs": 2,
+      "covered_workflows": 1,
+      "distinct_run_ids": 2,
+      "repo_id": 1001026445,
+      "tar": "1001026445.tar",
+      "zip_members": 2
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1003081497,
+      "tar": "1003081497.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1005060149,
+      "tar": "1005060149.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 9,
+      "covered_workflows": 1,
+      "distinct_run_ids": 9,
+      "repo_id": 1005417776,
+      "tar": "1005417776.tar",
+      "zip_members": 9
+    },
+    {
+      "covered_runs": 49,
+      "covered_workflows": 4,
+      "distinct_run_ids": 49,
+      "repo_id": 1006079854,
+      "tar": "1006079854.tar",
+      "zip_members": 49
+    },
+    {
+      "covered_runs": 2,
+      "covered_workflows": 1,
+      "distinct_run_ids": 2,
+      "repo_id": 1011556170,
+      "tar": "1011556170.tar",
+      "zip_members": 2
+    },
+    {
+      "covered_runs": 38,
+      "covered_workflows": 1,
+      "distinct_run_ids": 38,
+      "repo_id": 1012235767,
+      "tar": "1012235767.tar",
+      "zip_members": 38
+    },
+    {
+      "covered_runs": 55,
+      "covered_workflows": 2,
+      "distinct_run_ids": 55,
+      "repo_id": 1012486985,
+      "tar": "1012486985.tar",
+      "zip_members": 55
+    },
+    {
+      "covered_runs": 452,
+      "covered_workflows": 11,
+      "distinct_run_ids": 452,
+      "repo_id": 1012578964,
+      "tar": "1012578964.tar",
+      "zip_members": 452
+    },
+    {
+      "covered_runs": 2,
+      "covered_workflows": 1,
+      "distinct_run_ids": 2,
+      "repo_id": 1012901591,
+      "tar": "1012901591.tar",
+      "zip_members": 2
+    },
+    {
+      "covered_runs": 4,
+      "covered_workflows": 1,
+      "distinct_run_ids": 4,
+      "repo_id": 1013187674,
+      "tar": "1013187674.tar",
+      "zip_members": 4
+    },
+    {
+      "covered_runs": 51,
+      "covered_workflows": 1,
+      "distinct_run_ids": 51,
+      "repo_id": 1013628416,
+      "tar": "1013628416.tar",
+      "zip_members": 51
+    },
+    {
+      "covered_runs": 66,
+      "covered_workflows": 1,
+      "distinct_run_ids": 66,
+      "repo_id": 1015078749,
+      "tar": "1015078749.tar",
+      "zip_members": 66
+    },
+    {
+      "covered_runs": 197,
+      "covered_workflows": 1,
+      "distinct_run_ids": 197,
+      "repo_id": 1015344414,
+      "tar": "1015344414.tar",
+      "zip_members": 204
+    },
+    {
+      "covered_runs": 33,
+      "covered_workflows": 1,
+      "distinct_run_ids": 33,
+      "repo_id": 1015787628,
+      "tar": "1015787628.tar",
+      "zip_members": 33
+    },
+    {
+      "covered_runs": 94,
+      "covered_workflows": 3,
+      "distinct_run_ids": 94,
+      "repo_id": 1016216279,
+      "tar": "1016216279.tar",
+      "zip_members": 94
+    },
+    {
+      "covered_runs": 2,
+      "covered_workflows": 1,
+      "distinct_run_ids": 2,
+      "repo_id": 1017088950,
+      "tar": "1017088950.tar",
+      "zip_members": 2
+    },
+    {
+      "covered_runs": 17,
+      "covered_workflows": 4,
+      "distinct_run_ids": 17,
+      "repo_id": 1017461928,
+      "tar": "1017461928.tar",
+      "zip_members": 17
+    },
+    {
+      "covered_runs": 4,
+      "covered_workflows": 1,
+      "distinct_run_ids": 4,
+      "repo_id": 1017878302,
+      "tar": "1017878302.tar",
+      "zip_members": 4
+    },
+    {
+      "covered_runs": 24,
+      "covered_workflows": 1,
+      "distinct_run_ids": 24,
+      "repo_id": 1020704423,
+      "tar": "1020704423.tar",
+      "zip_members": 24
+    },
+    {
+      "covered_runs": 55,
+      "covered_workflows": 1,
+      "distinct_run_ids": 55,
+      "repo_id": 1020973802,
+      "tar": "1020973802.tar",
+      "zip_members": 55
+    },
+    {
+      "covered_runs": 10,
+      "covered_workflows": 1,
+      "distinct_run_ids": 10,
+      "repo_id": 1023829418,
+      "tar": "1023829418.tar",
+      "zip_members": 10
+    },
+    {
+      "covered_runs": 132,
+      "covered_workflows": 7,
+      "distinct_run_ids": 132,
+      "repo_id": 1023991077,
+      "tar": "1023991077.tar",
+      "zip_members": 132
+    },
+    {
+      "covered_runs": 40,
+      "covered_workflows": 3,
+      "distinct_run_ids": 40,
+      "repo_id": 1024672851,
+      "tar": "1024672851.tar",
+      "zip_members": 40
+    },
+    {
+      "covered_runs": 125,
+      "covered_workflows": 4,
+      "distinct_run_ids": 125,
+      "repo_id": 1025126803,
+      "tar": "1025126803.tar",
+      "zip_members": 125
+    },
+    {
+      "covered_runs": 726,
+      "covered_workflows": 12,
+      "distinct_run_ids": 726,
+      "repo_id": 1025199345,
+      "tar": "1025199345.tar",
+      "zip_members": 726
+    },
+    {
+      "covered_runs": 5,
+      "covered_workflows": 1,
+      "distinct_run_ids": 5,
+      "repo_id": 1025286797,
+      "tar": "1025286797.tar",
+      "zip_members": 5
+    },
+    {
+      "covered_runs": 47,
+      "covered_workflows": 1,
+      "distinct_run_ids": 47,
+      "repo_id": 1025842850,
+      "tar": "1025842850.tar",
+      "zip_members": 47
+    },
+    {
+      "covered_runs": 9,
+      "covered_workflows": 1,
+      "distinct_run_ids": 9,
+      "repo_id": 1026423459,
+      "tar": "1026423459.tar",
+      "zip_members": 9
+    },
+    {
+      "covered_runs": 148,
+      "covered_workflows": 5,
+      "distinct_run_ids": 148,
+      "repo_id": 1026436443,
+      "tar": "1026436443.tar",
+      "zip_members": 148
+    },
+    {
+      "covered_runs": 5,
+      "covered_workflows": 1,
+      "distinct_run_ids": 5,
+      "repo_id": 1027781684,
+      "tar": "1027781684.tar",
+      "zip_members": 5
+    },
+    {
+      "covered_runs": 145,
+      "covered_workflows": 1,
+      "distinct_run_ids": 145,
+      "repo_id": 1028301496,
+      "tar": "1028301496.tar",
+      "zip_members": 145
+    },
+    {
+      "covered_runs": 65,
+      "covered_workflows": 1,
+      "distinct_run_ids": 65,
+      "repo_id": 1028574041,
+      "tar": "1028574041.tar",
+      "zip_members": 65
+    },
+    {
+      "covered_runs": 8,
+      "covered_workflows": 1,
+      "distinct_run_ids": 8,
+      "repo_id": 1028623919,
+      "tar": "1028623919.tar",
+      "zip_members": 8
+    },
+    {
+      "covered_runs": 2,
+      "covered_workflows": 1,
+      "distinct_run_ids": 2,
+      "repo_id": 1029839856,
+      "tar": "1029839856.tar",
+      "zip_members": 2
+    },
+    {
+      "covered_runs": 3,
+      "covered_workflows": 1,
+      "distinct_run_ids": 3,
+      "repo_id": 1029843839,
+      "tar": "1029843839.tar",
+      "zip_members": 3
+    },
+    {
+      "covered_runs": 111,
+      "covered_workflows": 2,
+      "distinct_run_ids": 111,
+      "repo_id": 1031204782,
+      "tar": "1031204782.tar",
+      "zip_members": 111
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1031767685,
+      "tar": "1031767685.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 12,
+      "covered_workflows": 2,
+      "distinct_run_ids": 12,
+      "repo_id": 1031967054,
+      "tar": "1031967054.tar",
+      "zip_members": 12
+    },
+    {
+      "covered_runs": 22,
+      "covered_workflows": 1,
+      "distinct_run_ids": 22,
+      "repo_id": 1034327340,
+      "tar": "1034327340.tar",
+      "zip_members": 22
+    },
+    {
+      "covered_runs": 317,
+      "covered_workflows": 2,
+      "distinct_run_ids": 317,
+      "repo_id": 1034523420,
+      "tar": "1034523420.tar",
+      "zip_members": 317
+    },
+    {
+      "covered_runs": 18,
+      "covered_workflows": 1,
+      "distinct_run_ids": 18,
+      "repo_id": 1035763893,
+      "tar": "1035763893.tar",
+      "zip_members": 18
+    },
+    {
+      "covered_runs": 2,
+      "covered_workflows": 1,
+      "distinct_run_ids": 2,
+      "repo_id": 1036248352,
+      "tar": "1036248352.tar",
+      "zip_members": 2
+    },
+    {
+      "covered_runs": 245,
+      "covered_workflows": 9,
+      "distinct_run_ids": 245,
+      "repo_id": 1036614688,
+      "tar": "1036614688.tar",
+      "zip_members": 245
+    },
+    {
+      "covered_runs": 39,
+      "covered_workflows": 1,
+      "distinct_run_ids": 39,
+      "repo_id": 1037053516,
+      "tar": "1037053516.tar",
+      "zip_members": 39
+    },
+    {
+      "covered_runs": 68,
+      "covered_workflows": 3,
+      "distinct_run_ids": 68,
+      "repo_id": 1038800581,
+      "tar": "1038800581.tar",
+      "zip_members": 68
+    },
+    {
+      "covered_runs": 9922,
+      "covered_workflows": 173,
+      "distinct_run_ids": 9922,
+      "repo_id": 1038995802,
+      "tar": "1038995802.tar",
+      "zip_members": 9922
+    },
+    {
+      "covered_runs": 42,
+      "covered_workflows": 1,
+      "distinct_run_ids": 42,
+      "repo_id": 1038996070,
+      "tar": "1038996070.tar",
+      "zip_members": 42
+    },
+    {
+      "covered_runs": 4,
+      "covered_workflows": 2,
+      "distinct_run_ids": 4,
+      "repo_id": 1039516593,
+      "tar": "1039516593.tar",
+      "zip_members": 4
+    },
+    {
+      "covered_runs": 46,
+      "covered_workflows": 6,
+      "distinct_run_ids": 46,
+      "repo_id": 1040320487,
+      "tar": "1040320487.tar",
+      "zip_members": 46
+    },
+    {
+      "covered_runs": 180,
+      "covered_workflows": 1,
+      "distinct_run_ids": 180,
+      "repo_id": 1040343562,
+      "tar": "1040343562.tar",
+      "zip_members": 180
+    },
+    {
+      "covered_runs": 7,
+      "covered_workflows": 1,
+      "distinct_run_ids": 7,
+      "repo_id": 1040412730,
+      "tar": "1040412730.tar",
+      "zip_members": 7
+    },
+    {
+      "covered_runs": 25,
+      "covered_workflows": 4,
+      "distinct_run_ids": 25,
+      "repo_id": 1040632993,
+      "tar": "1040632993.tar",
+      "zip_members": 25
+    },
+    {
+      "covered_runs": 195,
+      "covered_workflows": 3,
+      "distinct_run_ids": 195,
+      "repo_id": 1041264492,
+      "tar": "1041264492.tar",
+      "zip_members": 195
+    },
+    {
+      "covered_runs": 250,
+      "covered_workflows": 1,
+      "distinct_run_ids": 250,
+      "repo_id": 1042268365,
+      "tar": "1042268365.tar",
+      "zip_members": 250
+    },
+    {
+      "covered_runs": 247,
+      "covered_workflows": 7,
+      "distinct_run_ids": 247,
+      "repo_id": 1042367133,
+      "tar": "1042367133.tar",
+      "zip_members": 255
+    },
+    {
+      "covered_runs": 42,
+      "covered_workflows": 5,
+      "distinct_run_ids": 42,
+      "repo_id": 1042990095,
+      "tar": "1042990095.tar",
+      "zip_members": 42
+    },
+    {
+      "covered_runs": 13,
+      "covered_workflows": 2,
+      "distinct_run_ids": 13,
+      "repo_id": 1043036649,
+      "tar": "1043036649.tar",
+      "zip_members": 13
+    },
+    {
+      "covered_runs": 2,
+      "covered_workflows": 1,
+      "distinct_run_ids": 2,
+      "repo_id": 1043672093,
+      "tar": "1043672093.tar",
+      "zip_members": 2
+    },
+    {
+      "covered_runs": 102,
+      "covered_workflows": 7,
+      "distinct_run_ids": 102,
+      "repo_id": 1044553333,
+      "tar": "1044553333.tar",
+      "zip_members": 107
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1044571811,
+      "tar": "1044571811.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 3,
+      "covered_workflows": 1,
+      "distinct_run_ids": 3,
+      "repo_id": 1045721921,
+      "tar": "1045721921.tar",
+      "zip_members": 3
+    },
+    {
+      "covered_runs": 33,
+      "covered_workflows": 1,
+      "distinct_run_ids": 33,
+      "repo_id": 1046858436,
+      "tar": "1046858436.tar",
+      "zip_members": 33
+    },
+    {
+      "covered_runs": 8,
+      "covered_workflows": 3,
+      "distinct_run_ids": 8,
+      "repo_id": 1047472264,
+      "tar": "1047472264.tar",
+      "zip_members": 8
+    },
+    {
+      "covered_runs": 42,
+      "covered_workflows": 5,
+      "distinct_run_ids": 42,
+      "repo_id": 1047830672,
+      "tar": "1047830672.tar",
+      "zip_members": 42
+    },
+    {
+      "covered_runs": 575,
+      "covered_workflows": 1,
+      "distinct_run_ids": 575,
+      "repo_id": 1049861136,
+      "tar": "1049861136.tar",
+      "zip_members": 575
+    },
+    {
+      "covered_runs": 47,
+      "covered_workflows": 1,
+      "distinct_run_ids": 47,
+      "repo_id": 1050261543,
+      "tar": "1050261543.tar",
+      "zip_members": 47
+    },
+    {
+      "covered_runs": 6,
+      "covered_workflows": 4,
+      "distinct_run_ids": 6,
+      "repo_id": 1051606273,
+      "tar": "1051606273.tar",
+      "zip_members": 6
+    },
+    {
+      "covered_runs": 12,
+      "covered_workflows": 2,
+      "distinct_run_ids": 12,
+      "repo_id": 1052981291,
+      "tar": "1052981291.tar",
+      "zip_members": 12
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1053067649,
+      "tar": "1053067649.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 15,
+      "covered_workflows": 1,
+      "distinct_run_ids": 15,
+      "repo_id": 1053082592,
+      "tar": "1053082592.tar",
+      "zip_members": 15
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1053470626,
+      "tar": "1053470626.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 50,
+      "covered_workflows": 1,
+      "distinct_run_ids": 50,
+      "repo_id": 1054822717,
+      "tar": "1054822717.tar",
+      "zip_members": 50
+    },
+    {
+      "covered_runs": 12048,
+      "covered_workflows": 88,
+      "distinct_run_ids": 12048,
+      "repo_id": 1054829197,
+      "tar": "1054829197.tar",
+      "zip_members": 12048
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1055172051,
+      "tar": "1055172051.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 9,
+      "covered_workflows": 1,
+      "distinct_run_ids": 9,
+      "repo_id": 1056222460,
+      "tar": "1056222460.tar",
+      "zip_members": 9
+    },
+    {
+      "covered_runs": 3,
+      "covered_workflows": 2,
+      "distinct_run_ids": 3,
+      "repo_id": 1058681186,
+      "tar": "1058681186.tar",
+      "zip_members": 3
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1059445839,
+      "tar": "1059445839.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 435,
+      "covered_workflows": 6,
+      "distinct_run_ids": 435,
+      "repo_id": 1059472549,
+      "tar": "1059472549.tar",
+      "zip_members": 442
+    },
+    {
+      "covered_runs": 21,
+      "covered_workflows": 1,
+      "distinct_run_ids": 21,
+      "repo_id": 1059675310,
+      "tar": "1059675310.tar",
+      "zip_members": 21
+    },
+    {
+      "covered_runs": 7,
+      "covered_workflows": 1,
+      "distinct_run_ids": 7,
+      "repo_id": 1060046064,
+      "tar": "1060046064.tar",
+      "zip_members": 7
+    },
+    {
+      "covered_runs": 142,
+      "covered_workflows": 2,
+      "distinct_run_ids": 142,
+      "repo_id": 1061135413,
+      "tar": "1061135413.tar",
+      "zip_members": 142
+    },
+    {
+      "covered_runs": 23,
+      "covered_workflows": 2,
+      "distinct_run_ids": 23,
+      "repo_id": 1062935982,
+      "tar": "1062935982.tar",
+      "zip_members": 23
+    },
+    {
+      "covered_runs": 65,
+      "covered_workflows": 5,
+      "distinct_run_ids": 65,
+      "repo_id": 1066066387,
+      "tar": "1066066387.tar",
+      "zip_members": 67
+    },
+    {
+      "covered_runs": 1,
+      "covered_workflows": 1,
+      "distinct_run_ids": 1,
+      "repo_id": 1066883617,
+      "tar": "1066883617.tar",
+      "zip_members": 1
+    },
+    {
+      "covered_runs": 26,
+      "covered_workflows": 5,
+      "distinct_run_ids": 26,
+      "repo_id": 1068028598,
+      "tar": "1068028598.tar",
+      "zip_members": 26
+    },
+    {
+      "covered_runs": 492,
+      "covered_workflows": 1,
+      "distinct_run_ids": 492,
+      "repo_id": 1070140645,
+      "tar": "1070140645.tar",
+      "zip_members": 492
+    },
+    {
+      "covered_runs": 66,
+      "covered_workflows": 1,
+      "distinct_run_ids": 66,
+      "repo_id": 1072030363,
+      "tar": "1072030363.tar",
+      "zip_members": 66
+    },
+    {
+      "covered_runs": 231,
+      "covered_workflows": 6,
+      "distinct_run_ids": 231,
+      "repo_id": 1074309767,
+      "tar": "1074309767.tar",
+      "zip_members": 231
+    },
+    {
+      "covered_runs": 7,
+      "covered_workflows": 1,
+      "distinct_run_ids": 7,
+      "repo_id": 1079220368,
+      "tar": "1079220368.tar",
+      "zip_members": 10
+    }
+  ],
+  "totals": {
+    "archived_run_ids": 30393,
+    "coverage_rate": 0.007390348413602735,
+    "covered_repos": 92,
+    "covered_runs": 30393,
+    "covered_workflows": 475,
+    "tar_files": 92,
+    "total_repos": 2969,
+    "total_runs": 4112526,
+    "total_workflows": 11396,
+    "zip_members": 30427
+  }
+}
