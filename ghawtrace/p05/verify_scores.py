@@ -134,6 +134,35 @@ def compare_full_outputs(first, second):
     return 1 + len(columns)
 
 
+def verify_cluster_handoff(local_batch, cluster_batches):
+    local, local_table = read_batch(local_batch, "full")
+    runs = {}
+    for mode, batch in cluster_batches.items():
+        manifest, table = read_batch(batch, "sample" if mode == "sample" else "full")
+        if not manifest["master"].startswith("spark://") or not manifest["output_uri"].startswith("hdfs://"):
+            raise ValueError(f"Expected a Spark Standalone job with HDFS output for {mode}")
+        if (manifest["clean_inventory_sha256"] != local["clean_inventory_sha256"]
+                or manifest["p02_batch"] != local["p02_batch"]):
+            raise ValueError("Cluster and local P02 inputs differ")
+        # Count the worker field carried by actual persisted score rows.
+        counts = table.to_table(columns=["worker"])["worker"].value_counts().to_pylist()
+        workers = {row["values"]: row["counts"] for row in counts}
+        reported = Counter()
+        for row in manifest["breakdown"]:
+            reported[row["worker"]] += row["count"]
+        if (not all(workers) or workers != dict(reported) or sum(workers.values()) != manifest["rows"]
+                or (mode != "sample" and len(workers) < 2)):
+            raise ValueError(f"Worker evidence differs from stored scores for {mode}")
+        runs[mode] = {"hdfs_batch": manifest["output_uri"], "worker_rows": workers}
+    cluster, cluster_table = read_batch(cluster_batches["full"], "full")
+    if cluster["rows"] != local["rows"]:
+        raise ValueError("Cluster and local full row counts differ")
+    columns = compare_full_outputs(cluster_table, local_table)
+    return dict(batches=runs, local_application_id=local["application_id"],
+                local_spark_version=local["spark_version"], compared_rows=local["rows"],
+                compared_columns=columns, mismatches=0)
+
+
 def verify(clean_batch, sample_manifest, sample_batch, full_batch, repeat_batch):
     sample, small = read_batch(sample_batch, "sample")
     full, scores = read_batch(full_batch, "full")
@@ -212,8 +241,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("clean-batch", "sample-manifest", "sample-batch", "full-batch", "repeat-batch"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--compare-local-full", type=Path,
+                        help="Compare these cluster exports with a previously verified local full batch")
     args = parser.parse_args()
     result = verify(args.clean_batch, args.sample_manifest, args.sample_batch, args.full_batch, args.repeat_batch)
+    if args.compare_local_full:
+        batches = dict(sample=args.sample_batch, full=args.full_batch, repeat=args.repeat_batch)
+        result["cluster_handoff"] = verify_cluster_handoff(args.compare_local_full, batches)
     print(json.dumps(result, indent=2, sort_keys=True,
                      default=datetime.isoformat))
 

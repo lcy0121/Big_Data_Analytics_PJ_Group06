@@ -1,6 +1,6 @@
 # 技术栈与数据接口
 
-开发机 CPython 3.12，固定 PyArrow 25.0.1 与 NumPy 1.26.3。P03 也在 CPython 3.12.7 / PyArrow 16.1.0 复核。课程集群为 Spark 2.0.0 Standalone、Hadoop 2.7.7 HDFS、Oracle JDK 8、Python 2.7.5。P01–P03 已验收，P05-T01 在本机 PySpark 4.0.1 / JDK 21 完成全量验收。P04、P05 其余任务和 P06–P09 待验收。[锁定版本](requirements.txt) · [第三方声明](THIRD_PARTY_NOTICES.md)
+开发机 CPython 3.12，固定 PyArrow 25.0.1 与 NumPy 1.26.3。P03 也在 CPython 3.12.7 / PyArrow 16.1.0 复核。课程集群为 Spark 2.0.0 Standalone、Hadoop 2.7.7 HDFS、Oracle JDK 8、Python 2.7.5。P01–P03 已验收，P05-T01 已在课程 Spark 2.0.0 三台 Worker 和本机 PySpark 4.0.1 / JDK 21 完成全量验收。P04、P05 其余任务和 P06–P09 待验收。[锁定版本](requirements.txt) · [第三方声明](THIRD_PARTY_NOTICES.md)
 
 ## 按流程选型
 
@@ -13,7 +13,7 @@
 | 特征工程（P03） | PyArrow（`pyarrow.dataset`、`pyarrow.compute`）、NumPy 分组扫描、`ghawtrace/features.py` | 读 P01 批次、P02 清洗表或嵌套分区 Parquet 目录；输入必须含 `status` 列；按 `(repo_id, workflow_path)` 排序分组；P01 样本按 `sample_manifest.json` 的 cohort 区分完整观测与锚点；产出工作流画像、事件构成、连续周面板和按历史截点特征；全部写 Parquet | 本地实测 165 个分片、4,112,526 个 run、11,396 个工作流与 59 个 UTC 周，单进程约 1–2 分钟；手算样例与 11 项对账检查随批次记录。P04–P07 取已发布的 Parquet；Spark 2 通过 read_features 恢复微秒 UTC 类型 |
 | 集群画像复算（P03-T02） | PySpark 2.0.0 RDD、Python 2.7 标准库、HDFS | 从固定成功批次的类型化 UTC 列提取整数微秒，按仓库和精确路径分组，计算画像全部 106 列。每次作业保存 24 个 gzip 分区及实际处理工作流的节点记录 | 三台 Worker 两轮通过。PyArrow 对照每个键、类型、空值，浮点绝对和相对容差均为 1e-12。Spark 2 读取四表使用 `ghawtrace/p03/read_features.py`。[验收报告](reports/p03/p03_t02_repeat.json) |
 | 聚类（P04） | `pyspark.ml` 的 VectorAssembler、StandardScaler、KMeans；Python 3 端用 scikit-learn 的 silhouette_score、adjusted_rand_score 评估 | 数值向量 → 缩放 → 拟合多个 K 和种子 → 对照轮廓系数、簇规模、ARI；用原始单位解释中心与代表样本 | Spark 2.0 拟合；在固定样本上记录距离、缩放、轮廓系数及跨种子 ARI。Spark ClusteringEvaluator 自 2.3.0 引入。[API 版本](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.ml.evaluation.ClusteringEvaluator.html) [聚类与评估](https://spark.apache.org/docs/latest/ml-clustering.html) |
-| 运行级异常（P05-T01） | PySpark DataFrame 按工作流重分区、分区内按时间与 run ID 排序；Python 有界窗口精确求中位数、MAD 和重试尾部频率 | 一个 run 一行，保留历史支持度、两个分项、综合分数和原因 | 本机 Spark 4.0.1 双跑，独立 Python 复算。见[评分口径](#p05-scoring) |
+| 运行级异常（P05-T01） | PySpark DataFrame 按工作流重分区、分区内按时间与 run ID 排序；Python 有界窗口精确求中位数、MAD 和重试尾部频率 | 一个 run 一行，保留历史支持度、两个分项、综合分数和原因 | 课程 Spark 2.0.0 和本机 Spark 4.0.1 均已双跑，全量跨版本逐键一致，独立 Python 复算 751 个目标。见[评分口径](#p05-scoring) |
 | 生命周期与时间回测（P05-T02、P05-T03） | Spark SQL 周面板、持续性规则、时间顺序回放 | 一个工作流可有多个沉寂、恢复或突发区间，保存开始周、结束周和历史节律 | 在已知变化点上核验告警延迟，用稳定序列估计误报，标出末端截尾区间 |
 | 日志指纹（P06） | Python 标准库 `tarfile`、`zipfile`、`io`、`re`；PyArrow/Parquet | 以仓库 TAR 为分工单元，依次读单个 ZIP 和文本成员；记录规则命中、有效行数、成员定位、解析状态，先聚合 attempt 再形成 run 特征 | 批处理按 TAR 分配工作；保留证据行号，避免在 driver 解压整批数据或把全文收集至内存 |
 | 联合无监督分析（P07） | scikit-learn IsolationForest、pandas、DuckDB | 在同一有日志 run 集合上比较结构化与联合模型；对排名变化案例移除对应的日志特征组后重训，关联原始证据。将 `score_samples` 转为高分表示异常的统一方向 | 约三万条 run 的特征矩阵可在协调节点上建模。记录时间切分、种子、缺失率、排名变化及 Top-K 重合。[模型接口](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html) |
@@ -69,6 +69,8 @@ P03 批次目录为 `output_root/p03-<sha256>`，含四张 Parquet 与 `manifest
 - **发布。** 每次运行写新批次，读回 Parquet 比较输入输出键集、总行数、唯一键数及时间类型后发布成功 manifest。manifest 保存 P02 token、分片摘要、代码 SHA-256、窗口配置、样本清单摘要、Spark 版本、应用 ID 和各执行节点实际输出数量。本机样本与全量均从同一 P02 来源取历史。[运行命令](README.md#p05-run-scores)
 
 ## 环境定版与复现
+
+教师在课程大群指定 SSH 账号为 `root`，采用密码登录；各组 IP 列在腾讯文档对应组别之后。第 6 组已实登 node1 并读取正式 HDFS 批次。[登录命令](README.md#登录课程集群)
 
 万明浩完成五节点巡检。下表容量为 11 月 22 日的快照；角色为 T02 定版后实际参与作业的分工。统一使用 CentOS 7 x86_64、内核 `3.10.0-327.el7.x86_64`、Oracle JDK `1.8.0_471`、系统 Python `2.7.5`。当时未发现 Python 3、conda、NFS 工具或网络挂载。五机均备有 Spark 3.5.7；计算统一用 node1–4 的 `/opt/spark`（2.0.0），驱动与执行器使用 `/usr/bin/python`。
 

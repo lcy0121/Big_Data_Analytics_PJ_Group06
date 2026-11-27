@@ -1,0 +1,25 @@
+{
+  "application_id": "local-1795759989116",
+  "hdfs_batch": "hdfs://10.176.62.230:9000/data/ghawtrace/group06-p05-FIx6sUOQ/full/p05-app-20261127011053-0038-9a9bf37e4593",
+  "master": "local[1]",
+  "observed": {
+    "created_at_utc_max": "2026-09-21 20:38:02",
+    "created_at_utc_min": "2025-08-14 10:53:05",
+    "history_end_utc_max": "2026-10-16 16:58:04",
+    "history_end_utc_min": "2025-08-21 21:47:42",
+    "history_start_utc_max": "2026-10-03 23:13:25",
+    "history_start_utc_min": "2025-08-21 21:47:42",
+    "rows": 4112526,
+    "score_at_utc_max": "2026-10-17 04:33:42",
+    "score_at_utc_min": "2025-08-15 14:56:13",
+    "unique_runs": 4112526
+  },
+  "spark_version": "2.0.0",
+  "timezone": "UTC",
+  "types": {
+    "created_at_utc": "timestamp",
+    "history_end_utc": "timestamp",
+    "history_start_utc": "timestamp",
+    "score_at_utc": "timestamp"
+  }
+}

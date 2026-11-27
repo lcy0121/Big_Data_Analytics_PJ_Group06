@@ -17,7 +17,7 @@
 
 | 上游项目 / 包 | 使用范围 | 当前版本依据 | 上游主许可证与依据 |
 |---|---|---|---|
-| Apache Spark / PySpark（含 Spark SQL、MLlib） | 分布式清洗、特征、聚类 | 课程集群 P02/P03 实测 2.0.0；P05-T01 本机验收使用 PySpark 4.0.1（Python/JVM 桥接 Py4J 0.10.9.9，BSD-3-Clause，[上游许可](https://www.py4j.org/faq.html#what-is-the-license-of-py4j)） | Apache-2.0，发行版还带有组件声明。[LICENSE](https://github.com/apache/spark/blob/master/LICENSE) · [NOTICE](https://github.com/apache/spark/blob/master/NOTICE) |
+| Apache Spark / PySpark（含 Spark SQL、MLlib） | 分布式清洗、特征、聚类 | 课程集群 P02/P03/P05-T01 实测 2.0.0；P05-T01 同时用本机 PySpark 4.0.1 逐键复核（Python/JVM 桥接 Py4J 0.10.9.9，BSD-3-Clause，[上游许可](https://www.py4j.org/faq.html#what-is-the-license-of-py4j)） | Apache-2.0，发行版还带有组件声明。[LICENSE](https://github.com/apache/spark/blob/master/LICENSE) · [NOTICE](https://github.com/apache/spark/blob/master/NOTICE) |
 | Apache Arrow / pyarrow | 教师脚本、P01–P03 的本地 Parquet 读写及 P05 独立复算 | P01–P03 固定 25.0.1；P03 另以 16.1.0 复核一致 | Apache-2.0，随附组件许可见文件后部。[LICENSE](https://github.com/apache/arrow/blob/main/LICENSE.txt) |
 | NumPy / numpy | P03 分位数、分组统计与周面板 | 本地实测 1.26.3，与 PyArrow 25.0.1 联测；集群画像使用 Python 标准库 | BSD-3-Clause。[LICENSE](https://github.com/numpy/numpy/blob/main/LICENSE.txt) |
 | SQLite（CPython sqlite3） | P02-T04 在本地磁盘核对 run 与 attempt | 本地 SQLite 3.53.1，随 Python 环境调用 | SQLite 核心为公有领域。[上游声明](https://sqlite.org/copyright.html) |
