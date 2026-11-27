@@ -1,0 +1,162 @@
+{
+  "application_id": "app-20261125192025-0029", 
+  "evidence_breakdown": {
+    "completed_stage_count": 3, 
+    "executors_available": true, 
+    "stages_available": true, 
+    "total_completed_tasks": 43, 
+    "workers_with_completed_tasks": 8
+  }, 
+  "evidence_complete": true, 
+  "input_path": "hdfs://10.176.62.230:9000//data/ghawtrace/p02_t03_run1/current/runs_clean", 
+  "label": "partition-p24", 
+  "output_path": "hdfs://10.176.62.230:9000//data/ghawtrace/p02_t05_out_p24", 
+  "output_verification": {
+    "output_content_sha256": "c9dfdb710b81664a2c3176aa118eb5d4db4035c3de6763df75813f3754acf2d8", 
+    "output_rows": 10302, 
+    "sum_duration_sec": 71835442134, 
+    "sum_elapsed_seconds": 71835442134.0, 
+    "sum_nonempty_log_runs": 561367, 
+    "sum_run_cnt": 4112526
+  }, 
+  "partitions": {
+    "input_partitions": 18, 
+    "output_partitions": 24, 
+    "spark_sql_shuffle_partitions": 24
+  }, 
+  "resources": {
+    "executor_cores_conf": "2", 
+    "executor_memory_conf": "1536m", 
+    "worker_executors": [
+      {
+        "completed_tasks": 8, 
+        "host_port": "10.176.62.228:50334", 
+        "id": "2", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }, 
+      {
+        "completed_tasks": 2, 
+        "host_port": "10.176.62.227:47319", 
+        "id": "5", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }, 
+      {
+        "completed_tasks": 2, 
+        "host_port": "10.176.62.229:44481", 
+        "id": "7", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }, 
+      {
+        "completed_tasks": 11, 
+        "host_port": "10.176.62.228:40684", 
+        "id": "1", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }, 
+      {
+        "completed_tasks": 2, 
+        "host_port": "10.176.62.227:60244", 
+        "id": "4", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }, 
+      {
+        "completed_tasks": 2, 
+        "host_port": "10.176.62.229:53759", 
+        "id": "6", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }, 
+      {
+        "completed_tasks": 8, 
+        "host_port": "10.176.62.228:35842", 
+        "id": "0", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }, 
+      {
+        "completed_tasks": 8, 
+        "host_port": "10.176.62.228:38647", 
+        "id": "3", 
+        "max_memory": 670354636, 
+        "total_cores": 2
+      }
+    ]
+  }, 
+  "stage_and_shuffle_totals": {
+    "disk_bytes_spilled": 0, 
+    "executor_run_time_ms": 68074, 
+    "input_bytes": 3529740, 
+    "input_records": 4112526, 
+    "memory_bytes_spilled": 0, 
+    "output_bytes": 0, 
+    "output_records": 0, 
+    "shuffle_read_bytes": 2948985, 
+    "shuffle_read_records": 89803, 
+    "shuffle_write_bytes": 2948985, 
+    "shuffle_write_records": 89803, 
+    "stage_count": 3, 
+    "total_tasks": 43
+  }, 
+  "stages": [
+    {
+      "disk_bytes_spilled": 0, 
+      "executor_run_time_ms": 2657, 
+      "input_bytes": 0, 
+      "memory_bytes_spilled": 0, 
+      "name": "parquet at NativeMethodAccessorImpl.java:-2", 
+      "num_tasks": 1, 
+      "output_bytes": 0, 
+      "shuffle_read_bytes": 0, 
+      "shuffle_read_records": 0, 
+      "shuffle_write_bytes": 0, 
+      "shuffle_write_records": 0, 
+      "stage_id": 0, 
+      "task_cumulative_execution_time_ms": 2657
+    }, 
+    {
+      "disk_bytes_spilled": 0, 
+      "executor_run_time_ms": 52506, 
+      "input_bytes": 3529740, 
+      "memory_bytes_spilled": 0, 
+      "name": "parquet at NativeMethodAccessorImpl.java:-2", 
+      "num_tasks": 18, 
+      "output_bytes": 0, 
+      "shuffle_read_bytes": 0, 
+      "shuffle_read_records": 0, 
+      "shuffle_write_bytes": 2948985, 
+      "shuffle_write_records": 89803, 
+      "stage_id": 1, 
+      "task_cumulative_execution_time_ms": 52506
+    }, 
+    {
+      "disk_bytes_spilled": 0, 
+      "executor_run_time_ms": 12911, 
+      "input_bytes": 0, 
+      "memory_bytes_spilled": 0, 
+      "name": "parquet at NativeMethodAccessorImpl.java:-2", 
+      "num_tasks": 24, 
+      "output_bytes": 0, 
+      "shuffle_read_bytes": 2948985, 
+      "shuffle_read_records": 89803, 
+      "shuffle_write_bytes": 0, 
+      "shuffle_write_records": 0, 
+      "stage_id": 2, 
+      "task_cumulative_execution_time_ms": 12911
+    }
+  ], 
+  "telemetry_status": {
+    "errors": [], 
+    "executors_available": true, 
+    "stages_available": true
+  }, 
+  "timing": {
+    "job_wall_time_sec": 21.607, 
+    "sum_executor_run_time_ms": 68074, 
+    "task_cumulative_execution_time_ms": 68074
+  }, 
+  "valid_for_t05_acceptance": true
+}

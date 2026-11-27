@@ -60,4 +60,53 @@ P03 批次目录为 `output_root/p03-<sha256>`，含四张 Parquet 与 `manifest
 
 P02 由万明浩登记节点 OS/架构、JDK 发行版及主版本、Spark/PySpark 精确版本、Python 版本、共享路径、执行器数量与内存。按实装 Spark 选择兼容的 Java/Python，保持驱动与执行器 Python 小版本一致。把实测入口写入 README，冻结运行、实验和演示依赖。P08 全量复跑保存输入清单、代码版本、参数、时间范围和 Spark 应用 ID。
 
+### 五节点巡检与环境现状
+
+- **统一基线**：五台节点（`10.176.62.226` ~ `10.176.62.230`，登录用户 `root`）均为 CentOS Linux 7 (Core) x86_64（内核 `3.10.0-327.el7.x86_64`），均安装 Oracle JDK `1.8.0_471`，系统默认 Python 为 `2.7.5`（暂未发现 `python3` 或 `conda`）；当前各节点均无现成网络共享挂载（`mount` 无 NFS/HDFS 共享挂载）。
+- **节点明细**：
+  - `node1`（`10.176.62.226`）：4 核（Xeon E5649 @ 2.53GHz）/ 7.6G 内存（可用 ~2.0G）；`/` 50G（可用 39G）、`/home` 48G（可用 48G）；`/opt/spark` 指向 `spark-2.0.0-bin-hadoop2.7`，另有 `spark-3.5.7-bin-hadoop3` 与 `/opt/hadoop`；当前无 Hadoop/Spark 守护进程运行。
+  - `node2`（`10.176.62.227`）：4 核 / 7.6G 内存（可用 ~1.1G）；`/` 50G（可用 16G）、`/home` 48G（可用 34G）；`/opt/spark` 指向 `spark-2.0.0-bin-hadoop2.7`，另有 `spark-3.5.7-bin-hadoop3`；运行着 `NameNode`、`SecondaryNameNode`、`ResourceManager`。
+  - `node3`（`10.176.62.228`）：8 核 / 15G 内存（可用 ~14G）；`/` 50G（可用 30G）、`/home` 48G（可用 6.1G，已用 88%）；`/opt/spark` 指向 `spark-2.0.0-bin-hadoop2.7`，另有 `spark-3.5.7-bin-hadoop3`；运行着 `DataNode`、`NodeManager`；已验证可 SSH 连接。
+  - `node4`（`10.176.62.229`）：4 核 / 7.6G 内存（可用 ~1.3G）；`/` 50G（可用 29G）、`/home` 48G（可用 6.1G，已用 88%）；`/opt/spark` 指向 `spark-2.0.0-bin-hadoop2.7`，另有 `spark-3.5.7-bin-hadoop3`；运行着 `DataNode`、`NodeManager`。
+  - `node5`（`10.176.62.230`）：4 核 / 7.6G 内存（可用 ~5.7G）；`/` 50G（可用 41G）、`/home` 48G（可用 48G）；`/opt/spark` 指向 `spark-2.4.8-bin-hadoop2.7`，另有 `spark-2.0.0-bin-hadoop2.7`、`spark-3.5.7-bin-hadoop3`；运行着 Spark Standalone `Master`/`Worker`（`spark://10.176.62.230:7077`）及 `NameNode`/`SecondaryNameNode`/`DataNode`（单机 `localhost` HDFS，容量约 49.98GB，可用约 40.89GB）。
+- **存储与跨节点可读写路径**：五台机器未安装 NFS 工具且无网络挂载，但 `node5`（`10.176.62.230`）运行着可用 HDFS（`Live datanodes (1): node5`，总容量 49.98 GB，可用 40.89 GB）。已在 `node5` 实测 `hdfs dfs -mkdir`、`-put` 写入、`-cat` 读出与 `-rm` 清理闭环，统一采用 **`hdfs://`** 路径（如 `hdfs:///ghawtrace/...`）作为跨节点作业的可读写数据路径（同时避开 `node3`、`node4` 已用 88% 的本地 `/home` 分区）。
+
+### 集群节点角色分工
+
+| 节点 | IP 地址 | 承担角色 | Spark / 存储说明 |
+| :--- | :--- | :--- | :--- |
+| `node1` | `10.176.62.226` | **Spark Master + Driver（提交端）** | Spark `2.0.0` Standalone Master（RPC `7077` / Web UI `8080`），`spark-submit --deploy-mode client` 入口 |
+| `node2` | `10.176.62.227` | **Spark Worker** | Spark `2.0.0`，已成功注册至 `spark://10.176.62.226:7077` |
+| `node3` | `10.176.62.228` | **Spark Worker** | Spark `2.0.0`，已在 P02-T02 烟雾测试中实测承担执行器计算 |
+| `node4` | `10.176.62.229` | **Spark Worker** | Spark `2.0.0`，已在 P02-T02 烟雾测试中实测承担执行器计算 |
+| `node5` | `10.176.62.230` | **HDFS 存储服务节点** | 提供统一存储入口 `hdfs://10.176.62.230:9000` |
+
+### 运行环境与统一存储约定
+- **基础环境**：CentOS 7，Oracle JDK `1.8.0_471`，系统 Python `2.7.5`（`PYSPARK_PYTHON=/usr/bin/python`，PySpark 脚本保持 Python 2.7 兼容语法）。
+- **Spark 路径**：`node1`–`node4` 统一使用 `/opt/spark -> /opt/spark-2.0.0-bin-hadoop2.7`。
+- **统一存储路径**：集群无 NFS 共享挂载，所有分布式读写统一走 `hdfs://10.176.62.230:9000`。因各节点本地 `fs.defaultFS` 配置不一致（如 `node1` 默认指向 `hdfs://node1:9000`），提交作业时**必须显式传入完整 `hdfs://10.176.62.230:9000/...` 路径并附加 `--conf spark.hadoop.fs.defaultFS=hdfs://10.176.62.230:9000`**。
+
+### 常用启停与提交命令
+- **启动 / 停止 Master（`node1`）**：
+  - `/opt/spark/sbin/start-master.sh`
+  - `/opt/spark/sbin/stop-master.sh`
+- **启动 / 停止 Worker（`node2` / `node3` / `node4`）**：
+  - `/opt/spark/sbin/start-slave.sh spark://10.176.62.226:7077`
+  - `/opt/spark/sbin/stop-slave.sh`
+- **标准提交模板（在 `node1` 执行）**：
+  ```bash
+  HDFS_URI="hdfs://10.176.62.230:9000"
+  /opt/spark/bin/spark-submit \
+    --master spark://10.176.62.226:7077 \
+    --deploy-mode client \
+    --conf spark.hadoop.fs.defaultFS="${HDFS_URI}" \
+    <script.py> \
+    "${HDFS_URI}/<input_path>" \
+    "${HDFS_URI}/<output_path>"
+
+- **Parquet 兼容性与时区约定**：Spark `2.0.0` 不支持新版 `pyarrow` 默认的 `ZSTD` 压缩编解码；原始 Parquet 分片需先按 P01 `RUN_INPUT_SCHEMA`（13 列，裁除 `github_metadata_json`）无损转为 `Parquet 1.0 + Snappy` 格式再上传 HDFS（`hdfs://10.176.62.230:9000/data/ghawtrace/runs_snappy`）。涉及 UTC 时间解析的作业，提交时必须附加 `--conf "spark.driver.extraJavaOptions=-Duser.timezone=UTC"` 与 `--conf "spark.executor.extraJavaOptions=-Duser.timezone=UTC"`
+
+- **推荐分区与资源配置**：在 3 台 Worker 节点（实测分配 8 个 Executor × 2 核 / 1536m，总计 16 核）基线下，常规全量聚合分析统一使用 `--conf spark.sql.shuffle.partitions=24`（较默认 `200` 提速 27.6%、HDFS 输出小文件减少 88% 且零溢写）
+
+
 P03 已在 CPython 3.12.7、PyArrow 16.1.0 与 25.0.1、NumPy 1.26.3 下用 P01 全量批次和 165 个原始分片分别复跑，四张输出逐表一致；`python -m unittest discover -s tests` 共 41 项通过（含 P01 的 5 项）。审核修复后全量单进程约 1–2 分钟，`workflow_asof` 为 206,141 行（59 个周一截点中首个无可见工作流，表中出现 58 个截点；覆盖 11,377 个工作流）；样本批次（747 个 run、17 个工作流）约 1–3 秒，5 个非 cohort 工作流的未观测周全部为 `unknown`（状态计数 before 432、complete 264、unknown 290、partial 17）。代码不含平台相关路径或 shell 调用，目标仍为集群 Linux。

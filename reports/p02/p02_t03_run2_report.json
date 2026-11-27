@@ -1,0 +1,46 @@
+{
+  "application_id": "app-20261125190620-0028", 
+  "batch_token": "app-20261125190620-0028_83a9c7b7", 
+  "clean_output_fingerprint": {
+    "max_run_id": 35652296872, 
+    "min_run_id": 16963156550, 
+    "sum_duration_sec": 71835442134, 
+    "sum_elapsed_seconds": 71835442134.0, 
+    "written_clean_rows": 4112526, 
+    "written_quarantine_rows": 0
+  }, 
+  "clean_path": "hdfs://10.176.62.230:9000//data/ghawtrace/p02_t03_run2/current/runs_clean", 
+  "distinct_run_ids": 4112526, 
+  "independent_rule_hit_counts": {
+    "duplicate_primary_key": 0, 
+    "invalid_created_utc": 0, 
+    "invalid_primary_key": 0, 
+    "invalid_repo_id": 0, 
+    "invalid_workflow_key": 0, 
+    "invalid_workflow_path": 0, 
+    "null_conclusion": 257, 
+    "null_status": 0
+  }, 
+  "input_path": "hdfs://10.176.62.230:9000//data/ghawtrace/runs_snappy", 
+  "mutually_exclusive_quarantine_breakdown": {}, 
+  "quality_statistics": {
+    "malformed_updated_at_when_present": 0, 
+    "missing_or_invalid_updated_at": 0, 
+    "null_elapsed_seconds_rows": 0, 
+    "time_inversion_count": 0
+  }, 
+  "quarantine_path": "hdfs://10.176.62.230:9000//data/ghawtrace/p02_t03_run2/current/runs_quarantine", 
+  "reconciled_equals_input": true, 
+  "retained_rows": 4112526, 
+  "retained_unfinished_runs": {
+    "by_status": {
+      "in_progress": 8, 
+      "pending": 73, 
+      "queued": 176
+    }, 
+    "distinct_workflows": 149, 
+    "total_rows": 257
+  }, 
+  "total_input_rows": 4112526, 
+  "total_quarantined_rows": 0
+}

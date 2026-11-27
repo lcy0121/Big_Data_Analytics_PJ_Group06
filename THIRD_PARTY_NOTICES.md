@@ -17,7 +17,7 @@ P01 与 P03 的直接依赖固定于 [requirements.txt](requirements.txt)。其�
 
 | 上游项目 / 包 | 使用范围 | 当前版本依据 | 上游主许可证与依据 |
 |---|---|---|---|
-| Apache Spark / PySpark（含 Spark SQL、MLlib） | 分布式清洗、特征、聚类 | 方案选定，待集群定版 | Apache-2.0，发行版还带有组件声明。[LICENSE](https://github.com/apache/spark/blob/master/LICENSE) · [NOTICE](https://github.com/apache/spark/blob/master/NOTICE) |
+| Apache Spark / PySpark（含 Spark SQL、MLlib） | 分布式清洗、特征、聚类 | P02固定并实测2.0.0 | Apache-2.0，发行版还带有组件声明。[LICENSE](https://github.com/apache/spark/blob/master/LICENSE) · [NOTICE](https://github.com/apache/spark/blob/master/NOTICE) |
 | Apache Arrow / pyarrow | 教师脚本、P01 与 P03 的 Parquet 读写 | P01 固定 25.0.1；P03 在 16.1.0 与 25.0.1 上复核，结果一致，集群待锁定 | Apache-2.0，随附组件许可见文件后部。[LICENSE](https://github.com/apache/arrow/blob/main/LICENSE.txt) |
 | NumPy / numpy | P03 分位数、分组统计与周面板 | 本地实测 1.26.3，与 PyArrow 25.0.1 联测；集群待锁定 | BSD-3-Clause。[LICENSE](https://github.com/numpy/numpy/blob/main/LICENSE.txt) |
 | pandas | 教师读取示例、有限规模的结果表 | 本地实测 2.2.3，集群待锁定 | BSD-3-Clause。[LICENSE](https://github.com/pandas-dev/pandas/blob/main/LICENSE) |

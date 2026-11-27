@@ -40,6 +40,144 @@ python -m unittest discover -s tests -v
 - 课程样本有 **747 个 run 与 294 个 attempt 索引**。`sample_manifest.json` 列出 run ID、六类样例和 `cohorts` 中的 12 个完整工作流。做周序列或工作流统计时用这 12 个工作流。合成边界案例在测试中单独生成。
 - `runs_input.parquet` 保留原始列投影，`attempt_index.parquet` 通过 `tar_path` 和 `tar_member` 定位源 TAR 与 ZIP。同一批次满足完成条件时会复用。[数据与批次约定](technology_stack.md#表的粒度与分析口径)
 
+### Parquet转码
+> python3
+python ./ghawtrace/p02/convert_for_spark2.py <input_dir> <output_dir>[limit] [--clean-output]
+<input_dir>：输入 Parquet 分片目录。
+<output_dir>：输出目录。
+[limit]：可选，只转换排序后的前 N 个分片，必须是正整数。
+[--clean-output]：可选，如果输出目录非空，先清空输出目录再写入。
+
+### 集群提交(集群端python2.7.5)
+``` bash
+ssh root@10.176.62.226
+
+HDFS_URI="hdfs://10.176.62.230:9000"
+
+/opt/spark/bin/spark-submit \
+  --master spark://10.176.62.226:7077 \
+  --deploy-mode client \
+  --conf spark.hadoop.fs.defaultFS="${HDFS_URI}" \
+  --conf "spark.driver.extraJavaOptions=-Duser.timezone=UTC" \
+  --conf "spark.executor.extraJavaOptions=-Duser.timezone=UTC" \
+  --executor-cores 2 \
+  --executor-memory 1536m \
+  --conf spark.sql.shuffle.partitions=24 \
+  "${APP_SCRIPT}" \
+  "${HDFS_URI}/${INPUT_PATH}" \
+  "${HDFS_URI}/${OUTPUT_PATH}" \
+  "${REPORT_OUTPUT_PATH}" 2>&1 | tee "${LOG_PATH}"
+
+```
+
+#### 分区策略测试
+``` bash
+ssh root@10.176.62.226
+
+HDFS_URI="hdfs://10.176.62.230:9000"
+LABEL="partition-p24"
+
+/opt/spark/bin/spark-submit \
+  --master spark://10.176.62.226:7077 \
+  --deploy-mode client \
+  --conf spark.hadoop.fs.defaultFS="${HDFS_URI}" \
+  --conf "spark.driver.extraJavaOptions=-Duser.timezone=UTC" \
+  --conf "spark.executor.extraJavaOptions=-Duser.timezone=UTC" \
+  --executor-cores 2 \
+  --executor-memory 1536m \
+  --conf spark.sql.shuffle.partitions=24 \
+  "${APP_SCRIPT}" \
+  "${LABEL}" \
+  "${HDFS_URI}/${INPUT_PATH}" \
+  "${HDFS_URI}/${OUTPUT_PATH}" \
+  "${REPORT_OUTPUT_PATH}" 2>&1 | tee "${LOG_PATH}"
+```
+
+### 烟雾测试
+``` bash
+ssh root@10.176.62.226
+cd /root/ghawtrace_check
+
+/opt/spark/bin/spark-submit \
+  --master spark://10.176.62.226:7077 \
+  --deploy-mode client \
+  ghawtrace/p02/p02_t02_smoke.py \
+  hdfs:///tmp/p02_t02_in/sample.tsv \
+  hdfs:///tmp/p02_t02_out | tee reports/p02/p02_t02_run.log
+
+```
+
+### 节点上p02修改测试
+验证 workflow_id 可空保留、status 未知保留为活动但不进结果分母、workflow_path 缺失仍隔离这三条边界
+``` bash
+ssh root@10.176.62.226
+cd /root/ghawtrace_check
+
+  /opt/spark/bin/spark-submit \
+    --master local[1] \
+    --py-files ghawtrace/p02/clean_runs.py \
+    --conf spark.pyspark.python=python \
+    --conf spark.pyspark.driver.python=python \
+    ghawtrace/p02/verify_nullable_fields.py \
+    2>&1 | tee reports/p02/verify_nullable_fields.log
+```
+期望输出：
+```
+[setup] loading clean_runs from: /root/ghawtrace_check/ghawtrace/p02/clean_runs.py
+...
+[report] retained_rows: 3
+[report] total_quarantined_rows: 1
+[report] quarantine_breakdown: {u'INVALID_WORKFLOW_PATH': 1}
+[report] unfinished_by_status: {u'<NULL>': 1}
+[report] null_status_count: 1
+[report] null_conclusion_count: 1
+[clean] run_ids: [1, 2, 4]
+[quarantine] run_ids: [3]
+[quarantine] reasons: [u'INVALID_WORKFLOW_PATH']
+PASS - workflow_id null retained
+PASS - status null retained as activity
+PASS - workflow_path null quarantined
+PASS - normal run retained
+PASS - retained_rows == 3
+PASS - quarantined_rows == 1
+PASS - INVALID_WORKFLOW_PATH == 1
+PASS - unfinished <NULL> == 1
+PASS - null_status_count == 1
+PASS - null_conclusion_count == 1
+============================================================
+RESULT: ALL PASS
+```
+
+用故障注入在发布流程的 4 个关键点（写批次清洗表后、写批次 _SUCCESS 后、写 staging _SUCCESS 后、rename current→backup 后）分别抛 I/O 错误，验证任一步失败时回滚逻辑都能让下游仍完整读到上一成功批次的 current
+```bash
+ssh root@10.176.62.226
+cd /root/ghawtrace_check
+
+  /opt/spark/bin/spark-submit \
+    --master local[1] \
+    --py-files ghawtrace/p02/clean_runs.py \
+    --conf spark.pyspark.python=python \
+    --conf spark.pyspark.driver.python=python \
+    ghawtrace/p02/inject_failure.py \
+    2>&1 | tee reports/p02/inject_failure.log
+```
+期望输出：
+```
+[setup] loading clean_runs from: /root/ghawtrace_check/ghawtrace/p02/clean_runs.py
+...
+FAULT INJECTION RESULTS
+PASS - after_batch_clean_write - stage=after_batch_clean_write; batch_token=local-1795735334048_c2d7ecfd; clean_rows=3; quarantine_rows=1
+PASS - after_batch_success - stage=after_batch_success; batch_token=local-1795735334048_9c860a36; clean_rows=3; quarantine_rows=1
+PASS - after_stage_success - stage=after_stage_success; batch_token=local-1795735334048_10f4a10c; clean_rows=3; quarantine_rows=1
+PASS - after_rename_current_to_backup - stage=after_rename_current_to_backup; batch_token=local-1795735334048_ced84533; clean_rows=3; quarantine_rows=1
+PASS - input_corrupted - input_corrupted: InjectedFault=False, other_exc=yes, current_unchanged=True
+PASS - quarantine_missing - rejected as expected: cannot read rep1 quarantine_path file:///tmp/p02_row_quarantine_missing_E6fqUr/out/batches/local-1795735334048_32114186/runs_quarantine: u'Path does not exist: file:/tmp/p02_row_quarantine_missing_E6fqUr/out/batches/local-1795735334048_32114186/runs_quarantine;'
+PASS - clean_shrunk - rejected as expected: rep1 clean rows mismatch: actual=1 expected=3
+PASS - quarantine_zero_ok - PASS as expected: ok
+============================================================
+RESULT: ALL PASS
+```
+
 ### P03 工作流画像与周特征
 
 P03 读取 P01 批次目录（优先 `runs_input.parquet`）、P02 的 `runs_clean`、单个 Parquet 或嵌套分区目录（如 `year=2026/month=01/part-00000.parquet`），写出四张表：`workflow_profile.parquet`、`workflow_event_mix.parquet`、`workflow_week.parquet` 和 `workflow_asof.parquet`。输入必须含 `status` 列。样本批次约 1–3 秒，全量 4,112,526 个 run 约 1–2 分钟。
