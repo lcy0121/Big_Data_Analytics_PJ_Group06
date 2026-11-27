@@ -20,7 +20,7 @@ P01 提供可重跑的输入准备和共用样本。P02 已完成五节点盘点
 
 ## 开发者第一次运行
 
-组员可直接使用共享的已完成批次。自行生成时使用 Python 3.11 或更高版本（实测为 3.12.14）和 `unar`。若已有 `runs/*.parquet` 与 `logs/*.tar`，将 `P01_INPUT` 指向该目录并跳过解包。
+组员可直接使用共享的已完成批次。自行生成时使用 Python 3.12（实测 3.12.14）、仓库锁定的依赖和 `unar`。若已有 `runs/*.parquet` 与 `logs/*.tar`，将 `P01_INPUT` 指向该目录并跳过解包。
 
 ```sh
 python3 -m venv .venv
@@ -32,7 +32,9 @@ mkdir -p "$P01_INPUT"
 unar -q -D -o "$P01_INPUT" GHAWTrace_ref/runs.rar
 unar -q -D -o "$P01_INPUT" GHAWTrace_ref/logs.rar
 
-python -m ghawtrace.pipeline --input-root "$P01_INPUT" --output-root .local/p01 --mode sample
+mkdir -p .local
+python -m ghawtrace.pipeline --input-root "$P01_INPUT" --output-root .local/p01 --mode sample > .local/p01-result.json
+BATCH=$(python -c 'import json; print(json.load(open(".local/p01-result.json"))["batch_dir"])')
 python -m unittest discover -s tests -v
 ```
 
@@ -40,143 +42,46 @@ python -m unittest discover -s tests -v
 - 课程样本有 **747 个 run 与 294 个 attempt 索引**。`sample_manifest.json` 列出 run ID、六类样例和 `cohorts` 中的 12 个完整工作流。做周序列或工作流统计时用这 12 个工作流。合成边界案例在测试中单独生成。
 - `runs_input.parquet` 保留原始列投影，`attempt_index.parquet` 通过 `tar_path` 和 `tar_member` 定位源 TAR 与 ZIP。同一批次满足完成条件时会复用。[数据与批次约定](technology_stack.md#表的粒度与分析口径)
 
-### Parquet转码
-> python3
-python ./ghawtrace/p02/convert_for_spark2.py <input_dir> <output_dir>[limit] [--clean-output]
-<input_dir>：输入 Parquet 分片目录。
-<output_dir>：输出目录。
-[limit]：可选，只转换排序后的前 N 个分片，必须是正整数。
-[--clean-output]：可选，如果输出目录非空，先清空输出目录再写入。
+### P02 集群清洗与分区实验
 
-### 集群提交(集群端python2.7.5)
-``` bash
-ssh root@10.176.62.226
+Python 3 开发机可用 `python ghawtrace/p02/convert_for_spark2.py "$P01_INPUT/runs" .local/runs_snappy` 将 13 个项目字段转为 Parquet 1.0 / Snappy。输出目录与输入须互不包含。可在末尾加正整数，仅转换排序靠前的分片；显式加 `--clean-output` 会先清空输出目录。组内 HDFS 已有全量转码输入。
 
-HDFS_URI="hdfs://10.176.62.230:9000"
+在 node1 的仓库根目录用 Bash 执行。下例给每次复跑分配独立目录，使用与已验收清洗一致的 36 个分区；对比分区实验使用同一份固定清洗表。
 
-/opt/spark/bin/spark-submit \
-  --master spark://10.176.62.226:7077 \
-  --deploy-mode client \
-  --conf spark.hadoop.fs.defaultFS="${HDFS_URI}" \
-  --conf "spark.driver.extraJavaOptions=-Duser.timezone=UTC" \
-  --conf "spark.executor.extraJavaOptions=-Duser.timezone=UTC" \
-  --executor-cores 2 \
-  --executor-memory 1536m \
-  --conf spark.sql.shuffle.partitions=24 \
-  "${APP_SCRIPT}" \
-  "${HDFS_URI}/${INPUT_PATH}" \
-  "${HDFS_URI}/${OUTPUT_PATH}" \
-  "${REPORT_OUTPUT_PATH}" 2>&1 | tee "${LOG_PATH}"
-
-```
-
-#### 分区策略测试
-``` bash
-ssh root@10.176.62.226
-
-HDFS_URI="hdfs://10.176.62.230:9000"
-LABEL="partition-p24"
-
-/opt/spark/bin/spark-submit \
-  --master spark://10.176.62.226:7077 \
-  --deploy-mode client \
-  --conf spark.hadoop.fs.defaultFS="${HDFS_URI}" \
-  --conf "spark.driver.extraJavaOptions=-Duser.timezone=UTC" \
-  --conf "spark.executor.extraJavaOptions=-Duser.timezone=UTC" \
-  --executor-cores 2 \
-  --executor-memory 1536m \
-  --conf spark.sql.shuffle.partitions=24 \
-  "${APP_SCRIPT}" \
-  "${LABEL}" \
-  "${HDFS_URI}/${INPUT_PATH}" \
-  "${HDFS_URI}/${OUTPUT_PATH}" \
-  "${REPORT_OUTPUT_PATH}" 2>&1 | tee "${LOG_PATH}"
-```
-
-### 烟雾测试
-``` bash
-ssh root@10.176.62.226
-cd /root/ghawtrace_check
-
-/opt/spark/bin/spark-submit \
-  --master spark://10.176.62.226:7077 \
-  --deploy-mode client \
-  ghawtrace/p02/p02_t02_smoke.py \
-  hdfs:///tmp/p02_t02_in/sample.tsv \
-  hdfs:///tmp/p02_t02_out | tee reports/p02/p02_t02_run.log
-
-```
-
-### 节点上p02修改测试
-验证 workflow_id 可空保留、status 未知保留为活动但不进结果分母、workflow_path 缺失仍隔离这三条边界
-``` bash
-ssh root@10.176.62.226
-cd /root/ghawtrace_check
-
-  /opt/spark/bin/spark-submit \
-    --master local[1] \
-    --py-files ghawtrace/p02/clean_runs.py \
-    --conf spark.pyspark.python=python \
-    --conf spark.pyspark.driver.python=python \
-    ghawtrace/p02/verify_nullable_fields.py \
-    2>&1 | tee reports/p02/verify_nullable_fields.log
-```
-期望输出：
-```
-[setup] loading clean_runs from: /root/ghawtrace_check/ghawtrace/p02/clean_runs.py
-...
-[report] retained_rows: 3
-[report] total_quarantined_rows: 1
-[report] quarantine_breakdown: {u'INVALID_WORKFLOW_PATH': 1}
-[report] unfinished_by_status: {u'<NULL>': 1}
-[report] null_status_count: 1
-[report] null_conclusion_count: 1
-[clean] run_ids: [1, 2, 4]
-[quarantine] run_ids: [3]
-[quarantine] reasons: [u'INVALID_WORKFLOW_PATH']
-PASS - workflow_id null retained
-PASS - status null retained as activity
-PASS - workflow_path null quarantined
-PASS - normal run retained
-PASS - retained_rows == 3
-PASS - quarantined_rows == 1
-PASS - INVALID_WORKFLOW_PATH == 1
-PASS - unfinished <NULL> == 1
-PASS - null_status_count == 1
-PASS - null_conclusion_count == 1
-============================================================
-RESULT: ALL PASS
-```
-
-用故障注入在发布流程的 4 个关键点（写批次清洗表后、写批次 _SUCCESS 后、写 staging _SUCCESS 后、rename current→backup 后）分别抛 I/O 错误，验证任一步失败时回滚逻辑都能让下游仍完整读到上一成功批次的 current
 ```bash
-ssh root@10.176.62.226
-cd /root/ghawtrace_check
+NN=hdfs://10.176.62.230:9000
+DATA="$NN/data/ghawtrace"
+WORK=$(mktemp -d)
+OUT="$DATA/p02_$(basename "$WORK")"
+P02=ghawtrace/p02
+submit() {
+  /opt/spark/bin/spark-submit --master spark://10.176.62.226:7077 --deploy-mode client \
+    --executor-cores 2 --executor-memory 1536m --conf "spark.hadoop.fs.defaultFS=$NN" \
+    --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
+    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC "$@"
+}
+submit --conf spark.sql.shuffle.partitions=36 "$P02/clean_runs.py" \
+  "$DATA/runs_snappy" "$OUT/clean" "$WORK/clean.json"
+TOKEN=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["batch_token"])' "$WORK/clean.json")
+for n in 24 200; do
+  submit --conf "spark.sql.shuffle.partitions=$n" "$P02/partition_bench.py" \
+    "partition-p$n" "$OUT/clean/batches/$TOKEN/runs_clean" "$OUT/p$n" "$WORK/p$n.json"
+done
+```
 
-  /opt/spark/bin/spark-submit \
-    --master local[1] \
-    --py-files ghawtrace/p02/clean_runs.py \
-    --conf spark.pyspark.python=python \
-    --conf spark.pyspark.driver.python=python \
-    ghawtrace/p02/inject_failure.py \
-    2>&1 | tee reports/p02/inject_failure.log
+烟雾验证读取两列无表头 TSV（组键、整数），写回每组的行数与和。沿用上面的变量，在 node1 运行下列命令。边界脚本各自生成合成数据；nullable、故障注入和微秒精度三个脚本均应输出 `ALL PASS`。
+
+```bash
+submit "$P02/p02_t02_smoke.py" "$NN/tmp/p02_t02_in/sample.tsv" "$OUT/smoke"
+for test in verify_nullable_fields inject_failure verify_time_precision; do
+  /opt/spark/bin/spark-submit --master 'local[1]' --py-files "$P02/clean_runs.py" \
+    --conf spark.pyspark.python=python --conf spark.pyspark.driver.python=python \
+    --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
+    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC "$P02/$test.py"
+done
 ```
-期望输出：
-```
-[setup] loading clean_runs from: /root/ghawtrace_check/ghawtrace/p02/clean_runs.py
-...
-FAULT INJECTION RESULTS
-PASS - after_batch_clean_write - stage=after_batch_clean_write; batch_token=local-1795735334048_c2d7ecfd; clean_rows=3; quarantine_rows=1
-PASS - after_batch_success - stage=after_batch_success; batch_token=local-1795735334048_9c860a36; clean_rows=3; quarantine_rows=1
-PASS - after_stage_success - stage=after_stage_success; batch_token=local-1795735334048_10f4a10c; clean_rows=3; quarantine_rows=1
-PASS - after_rename_current_to_backup - stage=after_rename_current_to_backup; batch_token=local-1795735334048_ced84533; clean_rows=3; quarantine_rows=1
-PASS - input_corrupted - input_corrupted: InjectedFault=False, other_exc=yes, current_unchanged=True
-PASS - quarantine_missing - rejected as expected: cannot read rep1 quarantine_path file:///tmp/p02_row_quarantine_missing_E6fqUr/out/batches/local-1795735334048_32114186/runs_quarantine: u'Path does not exist: file:/tmp/p02_row_quarantine_missing_E6fqUr/out/batches/local-1795735334048_32114186/runs_quarantine;'
-PASS - clean_shrunk - rejected as expected: rep1 clean rows mismatch: actual=1 expected=3
-PASS - quarantine_zero_ok - PASS as expected: ok
-============================================================
-RESULT: ALL PASS
-```
+
+脚本位置、合成边界、首轮与正式批次的数据差异见[开发历史](history.md#p02-revisions)。启动和停止服务见[集群环境](technology_stack.md#环境定版与复现)。
 
 ### P02 日志覆盖审计
 在 Python 3 环境执行。将 `BATCH` 指向上方 P01 命令返回的成功目录，`P01_INPUT` 指向解包目录。sample 与 full 使用同一入口。
@@ -189,16 +94,13 @@ python -m ghawtrace.p02.coverage --batch "$BATCH" --tar-dir "$P01_INPUT/logs" --
 
 ### P03 工作流画像与周特征
 
-P03 读取 P01 批次目录（优先 `runs_input.parquet`）、P02 的 `runs_clean`、单个 Parquet 或嵌套分区目录（如 `year=2026/month=01/part-00000.parquet`），写出四张表：`workflow_profile.parquet`、`workflow_event_mix.parquet`、`workflow_week.parquet` 和 `workflow_asof.parquet`。输入必须含 `status` 列。样本批次约 1–3 秒，全量 4,112,526 个 run 约 1–2 分钟。
+在 Python 3 环境使用上方得到的 `BATCH`。也可输入 P02 的 `runs_clean`、单个 Parquet 或嵌套 Hive 分区目录。P01 批次优先读取 `runs_input.parquet`；输入须含 `status`。
 
 ```sh
-P01_BATCH="$(ls -d .local/p01/* | head -n 1)"   # 样本或全量批次均可
-python -m ghawtrace.feature_pipeline --runs-input "$P01_BATCH" --output-root .local/p03
+python -m ghawtrace.feature_pipeline --runs-input "$BATCH" --output-root .local/p03
 ```
 
-- 命令返回 `batch_dir` 与 `reused`。批次目录含四张 Parquet 和 `manifest.json`，记录输入 SHA-256、参数、分步行数、11 项对账结果及产物行数和字节数；重复运行同一输入会复用已完成批次。入口只发现一次样本清单，冻结输入文件清单和“有清单/无清单”状态；发布前核验分片成员、输入快照、样本清单未出现或改写、截点文件哈希未变。
-- 画像以 `(repo_id, workflow_path)` 为键，含事件与 UTC 小时分布、活跃天数、运行间隔、completed run 的耗时分位与重试率、跳过率和失败率；进行中/排队的 run 只计入活动类计数和 `open_run_count`。周面板按 UTC 周一对齐 59 周，区分 `complete`、`partial`、`before_first_observation` 和样本覆盖不足时的 `unknown`；`before_first_observation` 只用于完整观测的工作流。`workflow_asof` 只给截点前已出现的工作流出全局行，结果类特征要求 completed、结论非空且 `updated_at` 早于截点，供 P05、P07 复用。字段与分母见[数据口径](technology_stack.md#表的粒度与分析口径)，手算验收见 [test_p03.py](tests/test_p03.py)。
-- P01 样本会在输入目录内读取 `sample_manifest.json`，把 12 个 cohort 工作流视为完整观测；其余锚点工作流有 run 的周记 `partial`，所有未观测周（包括锚点之前）记 `unknown`（null），不会伪造零运行周或“出现前”。单文件或改名目录可用 `--sample-manifest` 显式传入。`--cutoffs my_cutoffs.parquet` 可指定 `cutoff_id`、`cutoff_utc`（可选 `repo_id`、`workflow_path` 限定单个工作流，两列必须同时为空或同时非空），`--cutoff-grid none` 可跳过截点表。
+批次含画像、事件构成、周面板、历史截点四张 Parquet 和记录输入摘要及 11 项对账的 manifest；同一输入可复用。样本约 1–3 秒，全量约 1–2 分钟。样本清单自动发现，也可用 `--sample-manifest` 指定。完整 cohort 可以估计零运行周，部分观测工作流的未观测周为 `unknown`。使用 `--cutoffs my_cutoffs.parquet` 指定截点，或用 `--cutoff-grid none` 停用默认周截点（仍产生有 schema 的空截点表）。字段、分母、冻结与发布条件见[数据口径](technology_stack.md#表的粒度与分析口径)，手算例见[特征测试](tests/test_p03.py)。
 
 ### 组员取用已验收的全量表
 
@@ -274,11 +176,7 @@ PY
 
 ## 系统设计与开发顺序
 
-- **集群与基础分析。** 万明浩盘点五节点并跑通 Spark 作业。黄志成先手算事件比例和失败率，再从清洗表产出工作流画像、连续周面板和历史特征。季雨昊用画像开发聚类与稳定性实验。刘陈昱实现按历史评分的运行级检测器，龙启波检测周序列的沉寂、恢复与突发并负责时间回测。
-- **日志与演示。** 刘陈昱负责 P02-T04 的覆盖审计，并协作黄志成完成 P03-T02 的集群聚合与对账。张锦稷使用 TAR 索引和覆盖清单解析指纹、定位证据。刘陈昱比较同一批可用 run 的结构化与日志联合评分，并集成原型分布、时间线和证据查询。
-- **环境与资料。** 全量运行创建时间为 2025-08-14 至 2026-09-21（UTC）。课程五节点按 node1 提交、node2–4 计算、node5 提供 HDFS 分工。Week 6 的 Spark 课件和 Week 3–4 的聚类资料可按文件名与页码查阅。[课程索引](technology_stack.md#课程资料与查阅路径)
-
-分工和验收见 [计划](plan.md)，输入输出见 [技术栈](technology_stack.md)。开始或恢复时切到对应 P 阶段或 [A00](plan.md#a00) 小项的固定分支。[协作与 Git 规则](AGENTS.md) 约定任务、分支和授权。验收后更新计划与 [历史](history.md)，调整依赖时更新 [第三方清单](THIRD_PARTY_NOTICES.md)。
+P01–P03 已验收。万明浩交付集群、清洗与分区实验；刘陈昱主责日志覆盖审计，并协作黄志成完成工作流画像的集群聚合与复核。接下来季雨昊开发 P04 聚类，刘陈昱和龙启波分别开发 P05 的运行评分与生命周期检测，张锦稷开发 P06 日志指纹和证据定位。P07 对比结构化与联合评分，P08 集成查询和演示。观测期为 2025-08-14 至 2026-09-21（UTC）。[六人分工与验收](plan.md) · [课程索引](technology_stack.md#课程资料与查阅路径) · [协作与 Git 规则](AGENTS.md)
 
 ## 课程交付
 

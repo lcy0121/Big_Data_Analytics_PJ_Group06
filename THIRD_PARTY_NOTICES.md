@@ -1,6 +1,6 @@
 # 第三方软件与材料声明
 
-本地 P01–P03 的第三方 Python 包固定于 [requirements.txt](requirements.txt)。其余版本按实测环境或打包结果登记，完整版权及许可证以实际发行版为准。
+项目 Python 3 管线固定 PyArrow、NumPy 两项；可选示例和后续阶段依赖另列。完整许可随各发行版。[requirements.txt](requirements.txt)
 
 ## 数据集、论文与课程材料
 
@@ -11,19 +11,19 @@
 | 运行表读取脚本 | 教师提供的本地 `GHAWTrace_ref/read_runs.py`，未标明独立版本、作者或开源许可证 | 小样本和字段参考。提交或公开衍生代码时标明来源，遵循课堂允许范围 |
 | 2026 版项目介绍 PPT | 课程分发的本地 `大数据分析技术项目-2026版.pptx`，未见单独许可证 | 核对选题与考核要求 |
 
-技术报告建议引文：Khelifi, J., Li, H., Ouni, A., Sayagh, M., and Saied, M. (2026). *GH-AWTrace: A Large-Scale Dataset of GitHub Agentic Workflow Execution Logs*. arXiv:2611.06866v1. [作者论文](https://arxiv.org/abs/2611.06866v1)
+技术报告按表中五位作者的顺序引用论文全名、2026 和 arXiv:2611.06866v1。
 
 ## 分析、实验与演示的直接依赖
 
 | 上游项目 / 包 | 使用范围 | 当前版本依据 | 上游主许可证与依据 |
 |---|---|---|---|
 | Apache Spark / PySpark（含 Spark SQL、MLlib） | 分布式清洗、特征、聚类 | P02 清洗、P03 全量画像和下游读表实测 2.0.0 | Apache-2.0，发行版还带有组件声明。[LICENSE](https://github.com/apache/spark/blob/master/LICENSE) · [NOTICE](https://github.com/apache/spark/blob/master/NOTICE) |
-| Apache Arrow / pyarrow | 教师脚本、P01–P03 的本地 Parquet 读写 | P01 固定 25.0.1；P03 在 16.1.0 与 25.0.1 上复核，结果一致；P02 覆盖及 P03 独立复核使用 25.0.1 | Apache-2.0，随附组件许可见文件后部。[LICENSE](https://github.com/apache/arrow/blob/main/LICENSE.txt) |
+| Apache Arrow / pyarrow | 教师脚本、P01–P03 的本地 Parquet 读写 | P01–P03 固定 25.0.1；P03 另以 16.1.0 复核一致 | Apache-2.0，随附组件许可见文件后部。[LICENSE](https://github.com/apache/arrow/blob/main/LICENSE.txt) |
 | NumPy / numpy | P03 分位数、分组统计与周面板 | 本地实测 1.26.3，与 PyArrow 25.0.1 联测；集群画像使用 Python 标准库 | BSD-3-Clause。[LICENSE](https://github.com/numpy/numpy/blob/main/LICENSE.txt) |
 | SQLite（CPython sqlite3） | P02-T04 在本地磁盘核对 run 与 attempt | 本地 SQLite 3.53.1，随 Python 环境调用 | SQLite 核心为公有领域。[上游声明](https://sqlite.org/copyright.html) |
-| pandas | 教师读取示例、有限规模的结果表 | 本地实测 2.2.3，集群待锁定 | BSD-3-Clause。[LICENSE](https://github.com/pandas-dev/pandas/blob/main/LICENSE) |
+| pandas | 教师读取示例、有限规模的结果表 | 读取示例实测 2.2.3；后续分析版本待锁定 | BSD-3-Clause。[LICENSE](https://github.com/pandas-dev/pandas/blob/main/LICENSE) |
 | DuckDB / duckdb | 教师 SQL 接口、独立复算与结果查询 | 教师脚本已引用，项目版本待锁定 | MIT。[LICENSE](https://github.com/duckdb/duckdb/blob/main/LICENSE) |
-| scikit-learn | ARI、Isolation Forest、联合实验 | 计划引入，待锁定 | BSD-3-Clause。[COPYING](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING) |
+| scikit-learn | P04 轮廓系数、ARI；P07 Isolation Forest | 计划引入，待锁定 | BSD-3-Clause。[COPYING](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING) |
 | Streamlit | Demo 查询与页面交互 | 计划引入，待锁定 | Apache-2.0。[LICENSE](https://github.com/streamlit/streamlit/blob/develop/LICENSE) |
 | Plotly.py / plotly | 原型分布、运行与生命周期时间线 | 计划引入，待锁定 | MIT。[LICENSE](https://github.com/plotly/plotly.py/blob/main/LICENSE.txt) |
 
@@ -41,7 +41,7 @@ Parquet 文件格式由实际读写实现（Spark、PyArrow 或 DuckDB）覆盖�
 
 ## 锁定、更新与提交
 
-1. P02 按分析、演示和开发工具记录包名、精确版本及来源，留存直接与解析出的传递依赖。单机验证标为本地实测。
+1. 按分析、演示、开发工具登记包名、版本、来源和实测环境，保留直接与解析出的传递依赖。
 2. 依赖增删时更新此表。复用上游实现、示例或资产时登记作者、地址、修订、改动与许可文件。
 3. P09 对照提交包和环境复核依赖，保留所需版权、LICENSE 和 NOTICE，注明外部工具来源，并在 [history.md](history.md) 记录版本及日期。
 

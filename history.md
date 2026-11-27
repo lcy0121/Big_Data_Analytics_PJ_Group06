@@ -4,12 +4,12 @@
 
 ## 2026-11-20 · P00-T01 · 课件与分组核对
 
-- 开发助手依据腾讯文档第 6 组截图核对六名成员及五台机器的分配。主机配置和连通性待 P02 实测。[成员与分配](README.md#系统设计与开发顺序)
+- 开发助手依据腾讯文档第 6 组截图核对六名成员及五台机器的分配。当日仅核对分配，实机巡检结果见 P02。[成员与分配](README.md#系统设计与开发顺序)
 - 核对 `大数据分析技术项目-2026版.pptx` 第 4–6 页的选题、集群、汇报和提交要求。教师另明确按个人分工及完成情况评分。[课程交付](README.md#课程交付)
 
 ## 2026-11-20 · P00-T02 · 运行表、论文和日志核数
 
-开发助手临时解包两份 RAR，以 PyArrow 逐片核对主键、工作流路径、日期、事件和结论，检查 TAR 中 ZIP 的成员数，再按 run ID 回查仓库键。P02 将独立复现下表基线。
+开发助手临时解包两份 RAR，以 PyArrow 逐片核对主键、工作流路径、日期、事件和结论，检查 TAR 中 ZIP 的成员数，再按 run ID 回查仓库键。下表为立项时统计，11 月 27 日 P02-T04 做了独立核验。
 
 | 检查 | 结果与口径 |
 |---|---|
@@ -74,7 +74,7 @@
 
 ## 2026-11-22 · P03 · 工作流画像、连续周面板与按历史截点特征
 
-阶段主责黄志成，开发助手实现并执行本地验收，待主责与组内复核。输入为 P01 全量批次（165 个分片，4,112,526 个 run）和 747 个 run 的样本批次，另用原始分片目录复跑对照。
+以下为初版历史基线。黄志成主责，开发助手实现并执行当轮本地验收。输入为 P01 全量批次（165 个分片，4,112,526 个 run）和 747 个 run 的样本批次，另用原始分片目录复跑对照。
 
 复跑入口：`python -m ghawtrace.feature_pipeline --runs-input <P01 批次> --output-root .local/p03`。产物在 `.local/p03/`（全量 `p03-885865…`、样本 `p03-607d48…`）和 `.local/p03-py25/p03-87c047…`（原始分片对照），按 `.gitignore` 不入库。
 
@@ -88,9 +88,9 @@
 | P03-T04 · 截点特征 | `workflow_asof.parquet` 672,364 行（59 个周一截点），`--cutoffs` 支持自定义截点及单工作流范围。测试在截点后追加 run 后重建，旧截点各行逐字段不变；结果可见性用 `updated_at` 约束，截止时点前未完成或更新时间缺失的 run 不计入结果类分母。 |
 | 全量性能 | P01 批次 83.6 MB 输入：读取与规范化 12.3 s、画像 3.8 s、周面板 7.6 s、截点表 20.1 s、对账 2.3 s，CLI 总计 44.8 s；四张产物 2.1/0.2/1.2/6.4 MB。样本批次 17 个工作流、747 个 run，约 3 s。 |
 | 测试与环境 | CPython 3.12.7、PyArrow 16.1.0 与 25.0.1、NumPy 1.26.3、Windows 11 本地；目标仍为集群 Linux，代码无平台相关路径或 shell 调用。`python -m unittest discover -s tests -v` 共 30 项通过（P01 5 项 + P03 25 项）。用 P01 批次和 165 个原始分片分别全量运行，四张表逐表相同。 |
-| 方案变更 | 计划原写 PySpark SQL。P03 依赖的 P02-T03 清洗表尚未落地，而 4.1M 行在单机列式下约 45 秒完成；为使本阶段能在本地按手算样例验收，改用 PyArrow + NumPy，输出仍为 Parquet，P04/P05 的 Spark 作业可直接读取。技术栈已同步，若后续要求集群重算只需替换读取层。 |
+| 方案变更 | 计划原写 PySpark SQL。P03 依赖的 P02-T03 清洗表尚未落地，而 4.1M 行在单机列式下约 45 秒完成；为使本阶段能在本地按手算样例验收，改用 PyArrow + NumPy，输出仍为 Parquet，当时约定 P04/P05 从交付表读入；课程 Spark 2 的时间类型适配详见 11 月 27 日记录。11 月 27 日另实现按键分组的集群复算。 |
 | 修正 | 验收中发现结果类比例在“有可见结果但无 success/failure 结论”时应记 null，最初被写成 NaN；已改为 null，并在批次对账中新增 `no_unmasked_nan` 检查。 |
-| 交付与限制 | P02-T03 清洗表尚未产出，T02 的“对清洗表”对账以 P01 全量 `runs_input` 为基线，P02 完成后按行数复核。小时与深夜结论仅适用于 UTC；耗时是从创建到最后更新的代理量。 |
+| 交付与限制 | 当轮仅有 P01 全量 `runs_input`；后续固定清洗批次的正式验收见 11 月 27 日。小时与深夜结论仅适用于 UTC；耗时是从创建到最后更新的代理量。 |
 
 （本节为 2026-11-22 修复前基线；2026-11-23 审核修复后的口径与数字见下节。）
 
@@ -107,23 +107,20 @@
   - **存储排障记录**：初期使用简写 `hdfs:///...` 时因 `node1` 默认 `fs.defaultFS=hdfs://node1:9000` 触发 `Connection refused` 及 Worker 侧 `UnknownHostException: node1`，通过显式指定完整 `hdfs://10.176.62.230:9000` 路径及 `--conf spark.hadoop.fs.defaultFS=hdfs://10.176.62.230:9000` 解决。
   - **算力池扩容验证**：在 T2 验收通过后，进一步将同版本 `node2`（`10.176.62.227`，Spark `2.0.0`）作为 Worker 成功注册至 `spark://10.176.62.226:7077`，集群计算池扩展为 `node2`/`node3`/`node4` 共 3 个工作节点，为后续分布式清洗与覆盖率审计预留算力。
 
-## 2026-11-23｜P02-T03 全量 `runs` 分布式清洗、对账与可复现验证闭环**
-  - **兼容性排障与前置转码**：单片试跑暴露原始 Parquet 使用 `ZSTD` 压缩，Spark `2.0.0` 底层 Thrift 解析报 `Required field 'codec' was not present`。通过 `ghawtrace/convert_for_spark2.py` 严格按 P01 `RUN_INPUT_SCHEMA`（13 列，裁除体积巨大的 `github_metadata_json`）无损转为 `Parquet 1.0 + Snappy`（165 片总计 83.7 MB），单片试跑（25,000 行）随即一次通过。
-  - **全量双跑实测证据**（3 Worker：`node2`/`node3`/`node4`，`--executor-cores 2 --executor-memory 1536m`，`spark.sql.shuffle.partitions=36`，JVM 时区 `UTC`）：
-    - 第 1 遍：`app-20261123191035-0006` → `hdfs://10.176.62.230:9000/data/ghawtrace/p02_t03_run1`（报告：[run1_report](reports/p02/p02_t03_run1_report.json)）
-    - 第 2 遍：`app-20261123192550-0007` → `hdfs://10.176.62.230:9000/data/ghawtrace/p02_t03_run2`（报告：[run2_report](reports/p02/p02_t03_run2_report.json)）
-  - **清洗与对账结果**：
-    - 全量读入核对：165 片共读入 `4,112,526` 行，`distinct_run_ids = 4,112,526`（与数据集论文总数一致）。
-    - 保留与隔离明细：保留 `4,112,269` 行（`runs_clean`，99.994%），隔离 `257` 行（`runs_quarantine`，0.006%）。逐项校验结果：主键非法 `0`、主键重复 `0`、UTC 时间非法 `0`、负耗时 `0`、`status` 为空 `0`、`conclusion` 为空 `257`。
-    - 隔离业务归因：257 条 `NULL_CONCLUSION` 全部来自数据抓取截止时尚未结束的运行（`queued`: 176、`pending`: 73、`in_progress`: 8），已完成（`completed`）记录零缺失。
-    - 严格对账与重复运行一致：`4,112,269 + 257 == 4,112,526`（`reconciled_equals_input: true`）；两次全量运行规范化报告 `diff` 零差异，落盘回读指纹一致（`written_clean_rows=4,112,269`、`min_run_id=16963156550`、`max_run_id=35652296872`、`sum_duration_sec=71,829,545,485`）
+## 2026-11-23 · P02-T03/T05 首轮实验（旧清洗口径）
 
-## 2026-11-23｜P02-T05 全量聚合作业分区策略对比与最终配置固化**
-- **实验设计**：基于 P02-T03 产出的全量干净表 `runs_clean`（`4,112,269` 行），执行相同的 `(repo_id, event, conclusion)` 全量分组聚合与 Parquet 落盘，固定资源配置（3 台 Worker，实测 8 个 Executor × 2 核 / 1536m），对比 `spark.sql.shuffle.partitions=200`（默认基线）与 `24`（调优配置），通过 Spark Web UI REST API 自动采集 Stage 与 Shuffle 指标。
-  - **实测结果对比**：
-    - **配置 A（`p=200`，`app-20261123195405-0008`）**：输入 `18` / 输出 `200` 分片（HDFS 200 个 Parquet 文件），耗时 `33.029 s`（Executor 累计 `107,660 ms`），`3` Stage / `219` Task，Shuffle 读写各 `3,894,637 B`（`89,631` 条），Spill `0 B`。
-    - **配置 B（`p=24`，`app-20261123195451-0009`）**：输入 `18` / 输出 `24` 分片（HDFS 24 个 Parquet 文件），耗时 `23.906 s`（Executor 累计 `68,385 ms`），`3` Stage / `43` Task，Shuffle 读写各 `3,132,793 B`（`89,631` 条），Spill `0 B`。
-  - **一致性与选型结论**：两组配置输出均为 `10,246` 行（`sum_run_cnt=4,112,269`、`sum_duration_sec=71,829,545,485`、`sum_nonempty_log_runs=561,366`），逐行内容 SHA-256 完全一致（`b9f0191f90f927ed87145432569e258c60678f62939069c74e5b55c9161ead3f`）。最终选定 `spark.sql.shuffle.partitions=24`：端到端提速 27.6%、CPU 时间降 36.5%、Task 数降 80.4%、Shuffle 字节降 19.6%、输出小文件降 88% 且无溢写（报告：[p200_report](reports/p02/p02_t05_p200_report.json)、[p24_report](reports/p02/p02_t05_p24_report.json)）。
+原始 ZSTD 分片在 Spark 2.0 报 `Required field 'codec' was not present`。转码器将 13 个项目字段写成 Parquet 1.0 + Snappy，165 片共 83.7 MB，单片 25,000 行试跑成功。[当前转码器](ghawtrace/p02/convert_for_spark2.py)
+
+三台 Worker、2 核/1536m 每执行器、36 个清洗分区、JVM UTC。应用 `app-20261123191035-0006` 和 `app-20261123192550-0007` 分别写入 `p02_t03_run1`、`p02_t03_run2`。两次均读入 4,112,526 个唯一 run，保留 4,112,269（99.994%）。当时隔离的 257 行（0.006%）均为未完成 run 的空结论：queued 176、pending 73、in_progress 8；非法键、重复键、非法创建时间、倒序、空 status 均为 0。两份规范化报告一致，保留 ID 范围 16963156550–35652296872，耗时合计 71,829,545,485 秒。11 月 25 日起保留这 257 行。
+
+用同一旧表按仓库、事件、结论聚合，8 个执行器、18 个输入分区、3 个 stage，均零溢写。两档输出 10,246 行、561,366 个源表标记的非空日志 run，逐行摘要 `b9f0191f90f927ed87145432569e258c60678f62939069c74e5b55c9161ead3f`。
+
+| 分区 / 应用 | 墙钟秒 / 执行器累计毫秒 | 任务 | Shuffle 每向字节 / 记录 |
+|---|---:|---:|---:|
+| 200 · `app-20261123195405-0008` | 33.029 / 107,660 | 219 | 3,894,637 / 89,631 |
+| 24 · `app-20261123195451-0009` | 23.906 / 68,385 | 43 | 3,132,793 / 89,631 |
+
+旧口径墙钟耗时约降 27.6%，执行器累计时间约降 36.5%，任务数约降 80.4%，Shuffle 字节约降 19.6%，输出文件少 88%。原报告固定在[首轮实验版本](https://github.com/lcy0121/Big_Data_Analytics_PJ_Group06/tree/619c407bf50c85c70b661af11f837d7a74861fec/reports/p02)。全量保留后的正式结果见下文。
 
 ## 2026-11-23 · P03 · 审核意见修复与回归
 
@@ -142,15 +139,15 @@
 |---|---|
 | 测试 | `python -m unittest discover -s tests -v` 共 **38** 项通过（P01 5 项 + P03 33 项），覆盖上述六项和原有手算样例。 |
 | 全量运行 | P01 批次 4,112,526 个 run：画像 11,396 行、事件构成 15,332 行、周面板 672,364 行（状态与修复前相同：before 454,827、partial 11,398、complete 206,139，其中零运行 103,433；全量输入无 `unknown`）、截点表 206,141 行；CLI 约 56.6 秒。11 项批次对账全部通过。 |
-| 样本运行 | 747 个 run、17 个工作流：画像 17 行、事件构成 25 行、周面板 1,003 行、截点表按可见工作流缩行；5 个非 cohort 工作流的未观测周为 `unknown`，不再出现虚假零运行。 |
+| 样本运行 | 747 个 run、17 个工作流：画像 17 行、事件构成 25 行、周面板 1,003 行、截点表按可见工作流缩行；5 个非 cohort 工作流的假零运行周已消除；锚点之前仍有周被误记为 before，见下轮复审。 |
 | 兼容性 | 批次参数 `interface_version` 升为 2，已有 v1 批次不会被误复用；`requirements.txt` 仍为 PyArrow 25.0.1 + NumPy 1.26.3。 |
-| 限制 | 集群全量聚合尚未实现，plan 中保留集群验收项；T02 的 `runs_clean` 对账待 P02-T03；样本数据只用于管线冒烟，不能替代全量验收。小时与深夜结论仅适用于 UTC；耗时仍是创建到最后更新的代理量。 |
+| 限制 | 当时尚缺集群全量聚合及正式清洗表对账；样本数据只用于管线冒烟，不能替代全量验收。小时与深夜结论仅适用于 UTC；耗时仍是创建到最后更新的代理量。 |
 
-（第一次修复后的样本状态 before 529 / unknown 193 是复审前数字；复审后更新为 before 432 / unknown 290，且锚点前未观测周改为 `unknown`，见下节。）
+第一次修复的样本状态为 before 529 / unknown 193；下节复审修正锚点前状态。
 
 ## 2026-11-23 · P03 · 复审三项边界修复
 
-阶段主责黄志成，开发助手按第二轮复审意见修复并回归，待主责与组内复核。上轮三项（全局截点未来工作流、两种不完整截点键、嵌套 Hive 目录含主键仅存分区路径）复审确认可关闭；本轮处理剩余三项。
+黄志成主责，开发助手按第二轮复审意见修复并回归。上轮三项（全局截点未来工作流、两种不完整截点键、嵌套 Hive 目录含主键仅存分区路径）复审确认可关闭；本轮处理剩余三项。
 
 | 复审问题 | 修复与实测结果 |
 |---|---|
@@ -165,9 +162,9 @@
 | 样本输出 | 画像 17 行、事件构成 25 行、周面板 1,003 行、可见截点表 457 行；非 cohort 工作流所有未观测周为 `unknown`，不再出现“锚点前活跃却写 before”的周。 |
 | 批次 | `interface_version=3`；无清单时参数 `coverage=null`，有清单时记录路径、字节数和 SHA-256；样本批次清单覆盖已写入。 |
 | 耗时 | 本轮全量 CLI 约 113.7 秒（前一轮约 56.6 秒，磁盘/负载不同；输出未变），样本约 1.4 秒。 |
-| 限制 | T02 仍待 P02-T03 的 `runs_clean` 正式对账；集群全量聚合另行登记。样本只用于管线冒烟；小时与深夜结论仅适用于 UTC。 |
+| 限制 | 该轮使用 P01 输入，正式清洗表与多机全量验收见 [11 月 27 日记录](#p03-cluster)。样本只用于管线冒烟；小时与深夜结论仅适用于 UTC。 |
 
-## 2026-11-25 p02修改以及补充测试
+## 2026-11-25 · P02 中间版复跑（应用 0016–0019）
 1. **本地回归测试（`tests/test_p02_regression.py`）**
    - 覆盖 `convert_for_spark2.py` 路径隔离/同径拒绝/`limit=1` 样本隔离与源文件 SHA-256 保持、`clean_runs.py` 跨秒亚秒精度与反转时间处理、`partition_bench.py` 遥测失败空值标记等场景；本地无 PySpark 桩环境下通过（`skipped=4` 为真实 PySpark 端到端用例，已由集群实测覆盖）。
 
@@ -181,110 +178,16 @@
    - 两档配置产出 `10,302` 行且聚合内容哈希一致（`c9dfdb710b81664a2c3176aa118eb5d4db4035c3de6763df75813f3754acf2d8`）；`p=24` 端到端耗时减少约 `19.8%`，累计 Executor 运行时间减少约 `37.8%`。
 4. 在[README](README.md)中添加了转换Parquet格式、集群提交、烟雾测试的指令入口
 
-### 2026-11-26 p02修改2
-1. **修改**：clean_runs.py 时间列从 utc_str 字符串改为 _micros_to_timestamp_col 持久化 TimestampType（微秒精度），并移除未定义的 _workflow_key_invalid 引用。
-**验收**：run3 批次 18 个 parquet 原样输入 P03 CLI，manifest.status=success、steps[0].output_rows=4112526、11/11 checks 全过（reconcile 步 failed=0），但当前为 timestamp[ns] 无 tz 元数据、样本亚秒为 0
-**待确认**:tz 与亚秒两点待管理者确认 P03 是否接受 naive UTC 
-2. **修改**：确认 quarantine_reason 只由 _pk_invalid/_pk_dup/_repo_invalid/_workflow_path_invalid/_created_utc_invalid 触发，workflow_id 与 status 不参与隔离，业务代码无需改动。
-**验收**：节点 verify_nullable_fields.py 用 4 行合成数据跑 clean_runs.py 端到端，10 项断言 ALL PASS（retained_rows=3、quarantined_rows=1、INVALID_WORKFLOW_PATH=1、unfinished_by_status={<NULL>:1}）；本地 test_p02_regression.py 新增 3 条对应测试，discover 得到 OK (skipped=4)。
-3. **修改**：改为不可变批次目录 batches/<token>/ → 回读核验行数 → 写 _SUCCESS → staging 核验 → rename 提升 current，并在 except 分支加“current 丢失且 backup 存在则 rename 回滚”。
-**验收**：inject_failure.py 在 4 个发布关键点注入 I/O 错误，4 个故障点全部 PASS（current 均恢复为上一成功批次且完整可读）
-4. **修改**：test_p02_regression.py 的 P02_DIR 指向修正为 ghawtrace/p02，pyspark 桩补全 LongType/TimestampType/StructField/StructType，并把 find_spec 改为真实 import 试探以识别空壳 pyspark。
-**验收**：干净检出后 python -m unittest discover -s tests -v 输出 Ran 58 tests ... OK (skipped=4)，P01 五项 + P02 非 Spark 测试全过，TestPySparkEndToEndIfAvailable 按设计在无 pyspark 环境时 skip
-5. **修改**：partition_bench.py 抽出 evaluate_t05_evidence(stages_raw, executors_raw)，可验收条件收紧为“两接口正常返回 + 至少 1 个 COMPLETE stage + 累计任务数 > 0 + 至少 1 个非 driver executor 的 completedTasks > 0”，report 新增 evidence_breakdown 字段。
-**验收**：本地新增 5 条纯函数测试（空列表 / HTTP 错误 / 无任务 / 无 worker / 正向）全部 ok；重跑两份 partition_bench 报告 valid_for_t05_acceptance 仍为 true，output_content_sha256 与改动前一致（c9dfdb...f2d8），证明只收紧判定边界、不影响实测内容。
+<a name="p02-revisions"></a>
 
-### 2026-11-26 p02修改3
-- 测试改为从报告读取 `clean_path` / `quarantine_path`，不再拼接 `out_dir/runs_clean`，与生产代码的 `batches/<token>/` 布局对齐。
-- 调用 `clean_mod.main()` 期间临时禁用 `spark.stop`、退出后恢复，解决 `main()` 停止 session 后测试再读 parquet 报 stopped SparkContext 的问题。
-- 为整列全空的 `workflow_id` fixture 显式指定 `StructType`，避免 Spark 2.0 无法推断类型。
-- `_write_success_marker` 去掉 Py2 专有的 `unicode` 检查、改用 `isinstance(payload, bytes)`，Python 3 直接调用不再抛 `NameError`。
-- 新增 `ghawtrace/p02/verify_nullable_fields.py` 与 `ghawtrace/p02/inject_failure.py` 并随仓库提交，作为可从仓库复跑的目标集群测试入口。
-- 记录实际执行的 nullable、时间倒序、跨秒持久化用例结果：本地纯函数用例全通过；节点 `verify_nullable_fields.py` 10/10 PASS 覆盖 nullable 与隔离表。
-- 修正 history 中同一轮的旧计数，从“9 项 / 跳过 1 项”更新为“58 收集 / 54 通过 / 4 项 PySpark 端到端按设计跳过”。
-- 节点 nullable 验收脚本默认只加载同目录模块
-- 故障注入只接受指定故障点，无关异常判 FAIL
-- 时间列微秒持久化写后读回证据
+## 2026-11-26 至 27 · P02 清洗、发布与遥测复审
 
-### 2026-11-27 p02review fix04
-1. 旧批次两张表与第一份报告对账
-**代码修改**
-- `ghawtrace/p02/inject_failure.py` 的 `verify_rep1_paths` 改为**始终尝试读取** `rep1["clean_path"]` 与 `rep1["quarantine_path"]`：
-  - 读表失败（目录缺失、`part-*` 不存在）直接 FAIL，不再用 `if os.path.isdir(...) else 0` 把缺失记成 0 行；
-  - 实际行数与报告 `retained_rows`、`total_quarantined_rows` 逐一比对，不匹配即 FAIL；
-  - `_SUCCESS` 中的 `batch_token` 与报告 `batch_token` 不一致也 FAIL。
-- 新增 `run_row_mismatch_regressions()`，用独立临时目录覆盖三个场景：
-  - `quarantine_missing`：删除隔离表目录 → 预期 FAIL；
-  - `clean_shrunk`：清洗表缩到 1 行（写到临时目录后替换，保留 `_SUCCESS`）→ 预期 FAIL；
-  - `quarantine_zero_ok`：隔离表存在且实读 0 行、报告 `total_quarantined_rows=0` → 预期 PASS。
-- `_run_case` 区分 `InjectedFault`（`stage_name == fp` 才算命中）与其他异常，`other_exc` 非空即 FAIL；`all_pass` 加 `bool(results)` 防空列表误判。
-**验收**
-```bash
-  ssh root@10.176.62.226
-  cd /root/ghawtrace_check
-  /opt/spark/bin/spark-submit \
-    --master local[1] \
-    --py-files ghawtrace/p02/clean_runs.py \
-    --conf spark.pyspark.python=python \
-    --conf spark.pyspark.driver.python=python \
-    ghawtrace/p02/inject_failure.py \
-    2>&1 | tee reports/p02/inject_failure.log
-```
-期望输出：
-```
-[setup] loading clean_runs from: /root/ghawtrace_check/ghawtrace/p02/clean_runs.py
-...
-FAULT INJECTION RESULTS
-PASS - after_batch_clean_write - stage=after_batch_clean_write; batch_token=local-1795735334048_c2d7ecfd; clean_rows=3; quarantine_rows=1
-PASS - after_batch_success - stage=after_batch_success; batch_token=local-1795735334048_9c860a36; clean_rows=3; quarantine_rows=1
-PASS - after_stage_success - stage=after_stage_success; batch_token=local-1795735334048_10f4a10c; clean_rows=3; quarantine_rows=1
-PASS - after_rename_current_to_backup - stage=after_rename_current_to_backup; batch_token=local-1795735334048_ced84533; clean_rows=3; quarantine_rows=1
-PASS - input_corrupted - input_corrupted: InjectedFault=False, other_exc=yes, current_unchanged=True
-PASS - quarantine_missing - rejected as expected: cannot read rep1 quarantine_path file:///tmp/p02_row_quarantine_missing_E6fqUr/out/batches/local-1795735334048_32114186/runs_quarantine: u'Path does not exist: file:/tmp/p02_row_quarantine_missing_E6fqUr/out/batches/local-1795735334048_32114186/runs_quarantine;'
-PASS - clean_shrunk - rejected as expected: rep1 clean rows mismatch: actual=1 expected=3
-PASS - quarantine_zero_ok - PASS as expected: ok
-============================================================
-RESULT: ALL PASS
-```
-2. Spark 亚秒读回结果入仓
-**代码修改**
-- 新增 ghawtrace/p02/verify_time_precision.py，从报告 rep["clean_path"] 读 Spark 实际写出的 Parquet，断言 P03 真正读取的 created_at_utc / updated_at_utc 两列微秒值： 
-- 跨秒小数：00:00:00.900001Z → 00:00:01.100002Z，created_at_utc.us=900001、updated_at_utc.us=100002、elapsed_seconds≈0.200001；
-- 同秒倒序：00:00:05.500000Z → 00:00:05.200000Z，created_at_utc.us=500000、updated_at_utc.us=200000、elapsed_seconds=None。
-- 脚本默认从同目录加载 clean_runs.py（或 CLEAN_RUNS_PATH 覆盖），不依赖 /tmp。
-**验收**
-```bash
-ssh root@10.176.62.226
-cd /root/ghawtrace_check
-/opt/spark/bin/spark-submit \
-  --master local[1] \
-  --py-files ghawtrace/p02/clean_runs.py \
-  --conf spark.pyspark.python=python \
-  --conf spark.pyspark.driver.python=python \
-  ghawtrace/p02/verify_time_precision.py \
-  2>&1 | tee reports/p02/time_precision_readback.log
-
-期望输出：
-```
-[time] row1 created_at_utc.us = 900001  (expected 900001)
-[time] row1 updated_at_utc.us = 100002  (expected 100002)
-[time] row1 elapsed_seconds   = 0.200001  (expected ~0.200001)
-[time] row2 created_at_utc.us = 500000  (expected 500000)
-[time] row2 updated_at_utc.us = 200000  (expected 200000)
-[time] row2 elapsed_seconds   = None  (expected None)
-PASS - row1 created_at_utc.us == 900001
-PASS - row1 updated_at_utc.us == 100002
-PASS - row1 elapsed_seconds ~= 0.200001
-PASS - row2 created_at_utc.us == 500000
-PASS - row2 updated_at_utc.us == 200000
-PASS - row2 elapsed_seconds is None
-RESULT: ALL PASS
-```
-验收只需两行：900001 / 100002 + 0.200001（跨秒），500000 / 200000 + None（同秒倒序），证明 Spark 2.0 写出的 Parquet 保留微秒，P03 读取的两列可靠。
-3. README中的两项指令已做修改，不再依赖临时目录，改用受控的项目检出目录
-检验完这三项之后，即可合并分支
-
-
+- **字段和时间。** 清洗仅按 run 主键、重复键、仓库、工作流路径和创建时间隔离；移除未定义变量。空 workflow_id/status 可保留。UTC 时间由字符串改为整数微秒构造 TimestampType；run3 的 18 个实际清洗分片通过 P03 的 11 项检查。Spark INT96 在 Arrow 中显示无时区的 timestamp[ns]，按 UTC 解读。真实记录无亚秒的抽查另用合成样例补验。
+- **节点回归。** `verify_nullable_fields.py` 以 4 行验证保留 3、隔离 1（INVALID_WORKFLOW_PATH）、unfinished 中空 status 1，空 status/结论各 1，10 项通过。`verify_time_precision.py` 读回真正落盘的两列，跨秒 900001→100002 微秒得到 0.200001 秒，同秒倒序 500000→200000 得到 null，6 项通过。两脚本默认读取同目录 clean_runs，可由 CLEAN_RUNS_PATH 指定。
+- **不可变发布。** 写 `batches/<token>`、回读计数、写成功标记，核对 staging 后提升到 current；失败时从 backup 恢复。`inject_failure.py` 分别在 after_batch_clean_write、after_batch_success、after_stage_success、after_rename_current_to_backup 注入故障，旧成功表仍可读。精确检查 InjectedFault 与阶段名，拒绝空结果和无关异常。input_corrupted、quarantine_missing、clean_shrunk 必须被识别；quarantine_zero_ok 要求隔离表可读且实测为 0。核对两表行数、报告路径与成功 token。四个故障点及四个对照均通过。[节点复跑命令](README.md#p02-集群清洗与分区实验)
+- **测试修复。** 使用报告中的两张表路径，暂缓被测 main 内的 spark.stop 以便读回，对整列空 workflow_id 指定 StructType。清洗标记直接写 bytes，兼容 Python 2/3。测试从 ghawtrace/p02 加载代码，补齐类型桩，以真实 import 探测 PySpark。该轮本地发现 58 项，54 通过、4 项依赖真实 PySpark 而跳过。
+- **遥测。** `evaluate_t05_evidence` 要求 Stage 与 Executor 接口均返回、至少一个完成 Stage、完成任务数 > 0，且有非 driver 执行器完成任务。5 条测试覆盖空列表、HTTP 错误、无任务、无执行器和正例；报告 evidence_breakdown 与内容摘要可分别复核。
+- **最终入库报告。** 清洗应用 `0027`、`0028` 均保留 4,112,526 个唯一 run、隔离 0，257 个未完成 run 分布在 149 个工作流。耗时和 71,835,442,134 秒。压测 `0031`（200 分区）与 `0029`（24 分区）均产出 10,302 行、源表非空日志 run 数 561,367，结果摘要 `c9dfdb710b81664a2c3176aa118eb5d4db4035c3de6763df75813f3754acf2d8`。耗时 30.410/21.607 秒、累计执行器 95,252/68,074 毫秒、Shuffle 每向 3,752,768/2,948,985 字节，均无溢写。[清洗一](reports/p02/p02_t03_run1_report.json) · [清洗二](reports/p02/p02_t03_run2_report.json) · [200 分区](reports/p02/p02_t05_p200_report.json) · [24 分区](reports/p02/p02_t05_p24_report.json)
 
 ## 2026-11-27 · P02-T04 全量日志覆盖验收
 
@@ -319,3 +222,10 @@ PyArrow 参考流水线的 11 项对账通过。画像 11,396 行，事件构成
 另以 P01 全量输入重建四表，与 P02 固定清洗批次的结果交叉比较。周面板和历史截点表逐字节相同；事件明细按仓库、路径和事件排序后各列相同。画像其余 105 列逐值相同，101 个工作流的事件熵因浮点求和顺序不同，最大绝对差 4.45 × 10⁻¹⁶ 以内，低于 10⁻¹² 验收容差。不同物理分片的交付表按业务键比对。
 
 本地回归共 65 项，61 项通过，4 项依赖 PySpark 的用例在本地 Python 3 环境跳过。另在课程 Spark 2.0.0 运行 `verify_nullable_fields.py` 的 10 条断言与 `verify_time_precision.py` 的 6 条断言，全数通过。
+
+
+## 2026-11-27 · P03 交付后的全仓文档复核
+
+复核前六份文档固定于提交 `71e2173`，任一原稿可用 `git show 71e2173:文件名` 逐字取回。保留各阶段验收条目、原始实验、贡献归属及课程资料索引。跨阶段修订沿用 P03 验收分支。对照仓库实现与入库报告，区分三轮 P02 压测，修正 P03 周状态优先级、Spark 2 下游读表及 P04 轮廓系数工具的版本说明。
+
+本轮遍历 37 个 Git 跟踪文件、8 份 JSON 报告，并复跑 README 的样本入口。34 个任务的编号、勾选状态和验收正文逐项与原稿相同。新建样本的 747 个 run、294 个 attempt 及选择清单与上次逐字节一致。全量覆盖报告和第二轮集群产物的本地对账报告也与入库 JSON 逐字节相同。65 项本地测试中 61 项通过、4 项依赖 PySpark 而跳过；本轮使用已保存的集群产物复核。
