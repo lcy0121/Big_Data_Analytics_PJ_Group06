@@ -2,13 +2,13 @@
 
 大数据分析技术期末项目 · 第 6 组 · 选题 5
 
-本项目从 GitHub Agent 工作流提取行为画像，识别单次运行与长期节律的异常，并用执行日志寻找仅凭运行指标难以发现的问题。最终在课程集群批处理，通过演示追溯到工作流、run 和日志行。
+分析 GitHub Agent 工作流的运行画像、单次异常与长期节律，以执行日志追查运行指标遗漏的问题。最终在课程集群批处理，演示时可回溯工作流、run 与日志行。
 
 ## 当前可用内容
 
-P01 提供可重跑的输入准备和共用样本。P02 已完成五节点盘点、Spark 分布式清洗、分区实验和全量日志覆盖审计。P03 已用正式清洗表验收 4,112,526 个 run、11,396 个工作流与 59 个 UTC 周。三台 Worker 两次全量聚合均与独立画像的 106 列逐项一致，四张交付表已在组内 HDFS 发布。P05-T01 已在课程集群发布同一清洗批次的全量评分表，两次集群复跑以及与本机 Spark 4 的逐键对照均一致。[运行评分入口](#p05-run-scores)
+P00–P03、P05-T01 已验收。P01 提供共用样本，P02 完成五节点盘点、清洗、分区实验和日志覆盖审计。P03 在三台 Worker 双跑，11,396 个工作流的 106 列画像与独立实现一致，含 59 个 UTC 周的四表已发布至 HDFS。P05-T01 在同一批次给 4,112,526 个 run 各留一行，两次集群全量与本机 Spark 4 逐键一致。[运行评分](#p05-run-scores)
 
-课程资料可从课程群或组内共享目录按以下文件名获取。Git 记录项目代码和文档，原件与生成批次保存在本地或共享存储。
+原件从课程群或组内共享目录按文件名获取。Git 保存代码和文档，本地或共享存储保存原件与数据批次。
 
 | 材料 | 内容 |
 |---|---|
@@ -20,10 +20,10 @@ P01 提供可重跑的输入准备和共用样本。P02 已完成五节点盘点
 
 ## 开发者第一次运行
 
-组员可直接使用共享的已完成批次。自行生成时使用 Python 3.12（实测 3.12.14）、仓库锁定的依赖和 `unar`。若已有 `runs/*.parquet` 与 `logs/*.tar`，将 `P01_INPUT` 指向该目录并跳过解包。
+可直接取用共享批次。自行生成需 Python 3.12（实测 3.12.14）和 `unar`。已有 `runs/*.parquet`、`logs/*.tar` 时，把 `P01_INPUT` 设为其父目录，跳过解包。
 
 ```sh
-python3 -m venv .venv
+python3.12 -m venv .venv
 . .venv/bin/activate
 python -m pip install -r requirements.txt
 
@@ -38,19 +38,25 @@ BATCH=$(python -c 'import json; print(json.load(open(".local/p01-result.json"))[
 python -m unittest discover -s tests -v
 ```
 
-- 两种模式均需读取课程原始分片和 TAR。将 `--mode sample` 改为 `--mode full` 可准备全量输入。命令返回 `batch_dir` 与 `reused`。已完成批次的目录为非隐藏目录，包含两张 Parquet 表和状态为 `success` 的 `manifest.json`。
-- 课程样本有 **747 个 run 与 294 个 attempt 索引**。`sample_manifest.json` 列出 run ID、六类样例和 `cohorts` 中的 12 个完整工作流。做周序列或工作流统计时用这 12 个工作流。合成边界案例在测试中单独生成。
-- `runs_input.parquet` 保留原始列投影，`attempt_index.parquet` 通过 `tar_path` 和 `tar_member` 定位源 TAR 与 ZIP。同一批次满足完成条件时会复用。[数据与批次约定](technology_stack.md#表的粒度与分析口径)
+- `sample`、`full` 均扫描原始分片和 TAR，返回 `batch_dir`、`reused`。成功目录含 `manifest.json`、原始投影 `runs_input.parquet`、按 `tar_path/tar_member` 定位 ZIP 的 `attempt_index.parquet`，相同完整批次可复用。
+- 样本含 747 个 run 和 294 条 attempt 索引，另附 `sample_manifest.json` 列出 run ID、六类锚点与 12 个完整 cohort。周序列或工作流统计用完整 cohort，合成边界例见测试。[批次约定](technology_stack.md#表的粒度与分析口径)
+- 上述测试在缺少 PySpark 时跳过 Spark 回归。本机完整回归另用 JDK 21 和 `pip install pyspark==4.0.1`，在该环境中运行下列命令。
+
+```sh
+TZ=UTC SPARK_LOCAL_IP=127.0.0.1 PYSPARK_PYTHON="$(command -v python)" \
+  PYSPARK_SUBMIT_ARGS='--py-files ghawtrace/p02/clean_runs.py --conf spark.ui.enabled=false --conf spark.sql.ansi.enabled=false --conf spark.sql.shuffle.partitions=4 --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC pyspark-shell' \
+  python -m unittest discover -s tests -v
+```
 
 ### 登录课程集群
 
-在能访问课程网络的终端运行 `ssh root@10.176.62.226`，按提示输入老师在课程大群发布的服务器密码。登录后运行 `hostname`，第 6 组的提交机应返回 `node1`。各组机器的 IP 以教师在腾讯文档本组行公布的列表为准；若连接不上，按老师通知反馈节点和报错。[五台节点的分工](technology_stack.md#环境定版与复现)
+在课程网络运行 `ssh root@10.176.62.226`，按提示输入教师在课程大群公布的口令。登录后 `hostname` 应为 `node1`。其余地址见腾讯文档第 6 组行，连接失败按教师通知反馈节点和报错。[五台节点分工](technology_stack.md#环境定版与复现)
 
 ### P02 集群清洗与分区实验
 
-Python 3 开发机可用 `python ghawtrace/p02/convert_for_spark2.py "$P01_INPUT/runs" .local/runs_snappy` 将 13 个项目字段转为 Parquet 1.0 / Snappy。输出目录与输入须互不包含。可在末尾加正整数，仅转换排序靠前的分片；显式加 `--clean-output` 会先清空输出目录。组内 HDFS 已有全量转码输入。
+组内 HDFS 已有全量转码输入。自行转码用 `python ghawtrace/p02/convert_for_spark2.py "$P01_INPUT/runs" .local/runs_snappy`（Python 3，13 列，Parquet 1.0/Snappy）。输入输出目录须互不包含。末尾可加正整数限定前几片，`--clean-output` 先清空输出。
 
-在 node1 的仓库根目录用 Bash 执行。下例给每次复跑分配独立目录，使用与已验收清洗一致的 36 个分区；对比分区实验使用同一份固定清洗表。
+在 node1 仓库根目录用 Bash 运行。每次使用独立目录，按 36 分区清洗，再用同一不可变批次比较 24 和 200 分区。
 
 ```bash
 NN=hdfs://10.176.62.230:9000
@@ -73,7 +79,7 @@ for n in 24 200; do
 done
 ```
 
-烟雾验证读取两列无表头 TSV（组键、整数），写回每组的行数与和。沿用上面的变量，在 node1 运行下列命令。边界脚本各自生成合成数据；nullable、故障注入和微秒精度三个脚本均应输出 `ALL PASS`。
+烟雾作业读无表头 TSV（组键、整数），写每组行数与和。以下三个合成边界脚本在 node1 均应输出 `ALL PASS`。
 
 ```bash
 submit "$P02/p02_t02_smoke.py" "$NN/tmp/p02_t02_in/sample.tsv" "$OUT/smoke"
@@ -85,30 +91,30 @@ for test in verify_nullable_fields inject_failure verify_time_precision; do
 done
 ```
 
-脚本位置、合成边界、首轮与正式批次的数据差异见[开发历史](history.md#p02-revisions)。启动和停止服务见[集群环境](technology_stack.md#环境定版与复现)。
+[边界案例与批次差异](history.md#p02-revisions) · [集群启停](technology_stack.md#环境定版与复现)
 
 ### P02 日志覆盖审计
-在 Python 3 环境执行。将 `BATCH` 指向上方 P01 命令返回的成功目录，`P01_INPUT` 指向解包目录。sample 与 full 使用同一入口。
+Python 3 的 `BATCH` 与 `P01_INPUT` 沿用 P01 成功批次和解包根目录，两种模式通用。
 
 ```sh
 python -m ghawtrace.p02.coverage --batch "$BATCH" --tar-dir "$P01_INPUT/logs" --output .local/coverage.json
 ```
 
-全量报告逐 TAR 列出 ZIP、唯一 run 和覆盖工作流，并按 UTC 创建月及原始 event 列出分子、分母和覆盖率。多次 attempt 只给一个 run 贡献一次覆盖。P06 可据此核对实际解析的范围。[全量报告](reports/p02/p02_t04_coverage.json)
+全量报告按 TAR 列 ZIP、唯一 run、工作流数，按 UTC 创建月 × 原始 event 列覆盖分子与分母。每个 run 仅计一次覆盖。P06 以此核对解析范围。[覆盖报告](reports/p02/p02_t04_coverage.json)
 
 ### P03 工作流画像与周特征
 
-在 Python 3 环境使用上方得到的 `BATCH`。也可输入 P02 的 `runs_clean`、单个 Parquet 或嵌套 Hive 分区目录。P01 批次优先读取 `runs_input.parquet`；输入须含 `status`。
+Python 3 入口接受 P01 成功批次（优先读 `runs_input.parquet`）、P02 `runs_clean`、单个 Parquet 或嵌套 Hive 分区目录。输入须含 `status`。
 
 ```sh
 python -m ghawtrace.feature_pipeline --runs-input "$BATCH" --output-root .local/p03
 ```
 
-批次含画像、事件构成、周面板、历史截点四张 Parquet 和记录输入摘要及 11 项对账的 manifest；同一输入可复用。样本约 1–3 秒，全量约 1–2 分钟。样本清单自动发现，也可用 `--sample-manifest` 指定。完整 cohort 可以估计零运行周，部分观测工作流的未观测周为 `unknown`。使用 `--cutoffs my_cutoffs.parquet` 指定截点，或用 `--cutoff-grid none` 停用默认周截点（仍产生有 schema 的空截点表）。字段、分母、冻结与发布条件见[数据口径](technology_stack.md#表的粒度与分析口径)，手算例见[特征测试](tests/test_p03.py)。
+输出画像、事件构成、连续周面板、历史截点四表及含输入摘要与 11 项对账的 manifest，相同输入可复用。样本约 1–3 秒，全量约 1–2 分钟。自动发现样本清单，也可传 `--sample-manifest`；完整 cohort 能识别零运行周，其余工作流未观测周为 `unknown`。`--cutoffs my_cutoffs.parquet` 指定截点，`--cutoff-grid none` 关闭默认网格并保留空表 schema。[字段与发布](technology_stack.md#表的粒度与分析口径) · [手算用例](tests/test_p03.py)
 
 ### 组员取用已验收的全量表
 
-在 node1 的检出目录执行。四张 Parquet 和成功 manifest 共用一个批次，P04 取 `workflow_profile`，P05 取 `workflow_week` 和 `workflow_asof`，事件明细在 `workflow_event_mix`。P06 的 `p02_t04_coverage.json` 位于同一共享根目录。Spark 2 读取时间列时使用下面的入口，程序将打印行数和 UTC 时间范围。
+在 node1 读取同批四表与成功 manifest。P04 取 `workflow_profile`，P05-T02/T03 可取 `workflow_week`、`workflow_asof`，P07 使用截点特征；`workflow_event_mix` 保留事件明细。P05-T01 直接读 P02 清洗批次。P06 的覆盖报告在同一共享根目录。下例按 Spark 2 的 UTC 时间类型读回并打印行数与范围。
 
 ```sh
 HDFS=hdfs://10.176.62.230:9000/data/ghawtrace
@@ -120,11 +126,11 @@ FEATURES="$SHARED/p03-76f186f28bf8fb2208a4b1af2faab4df8011073df778eab7bd3f995dee
   ghawtrace/p03/read_features.py "$FEATURES"
 ```
 
-下游 PySpark 作业用 `--py-files ghawtrace/p03/read_features.py,ghawtrace/p02/clean_runs.py` 提交，沿用上面的 UTC 配置，在代码中执行 `from read_features import read_features` 和 `df = read_features(spark, batch_uri, "workflow_profile")`。Python 3 / PyArrow 可直接读取下载后的 Parquet。
+下游作业沿用 UTC 配置，加 `--py-files ghawtrace/p03/read_features.py,ghawtrace/p02/clean_runs.py`，执行 `from read_features import read_features`、`df = read_features(spark, batch_uri, "workflow_profile")`。Python 3 / PyArrow 可直接读下载后的 Parquet。
 
 ### 复跑 P03-T02 集群验收
 
-在 node1 的项目检出目录运行。每次使用新的 HDFS 输出目录。作业按工作流分组，在实际执行的 Worker 上计算画像，输出带分区、节点和应用 ID 的压缩 JSON 行。
+在 node1 检出目录使用新 HDFS 路径。作业按工作流分组，各 Worker 的 gzip JSON 行保留分区、节点与应用 ID。
 
 ```sh
 HDFS=hdfs://10.176.62.230:9000/data/ghawtrace
@@ -136,19 +142,20 @@ SPARK_OUT="$HDFS/p03_$(basename "$WORK")"
   --conf spark.sql.shuffle.partitions=24 --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
   --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
   ghawtrace/p03/spark_profile.py "$CLEAN_BATCH" "$SPARK_OUT"
-hdfs dfs -get "$CLEAN_BATCH/runs_clean" "$WORK/runs_clean"
-hdfs dfs -get "$CLEAN_BATCH/_SUCCESS" "$WORK/p02-marker.json"
+CLEAN="$WORK/${CLEAN_BATCH##*/}"
+hdfs dfs -get "$CLEAN_BATCH" "$CLEAN"
 hdfs dfs -get "$SPARK_OUT" "$WORK/spark-out"
-(cd "$WORK/runs_clean" && sha256sum *.parquet) > "$WORK/clean.sha256"
+(cd "$CLEAN/runs_clean" && sha256sum *.parquet) > "$WORK/clean.sha256"
 echo "$WORK"
 ```
 
-将该工作目录复制到已安装本仓库依赖的 Python 3 开发机，把 `WORK` 设为复制后的位置，再从仓库根目录运行。命令先重建四张 Parquet，再检查输入摘要、跨节点执行、每个工作流的列值和空值。通过时输出 `mismatches: 0`。
+复制整个 `WORK` 到 Python 3 开发机，更新变量后在仓库根目录重建四表，核验输入摘要、多机证据及画像逐键数值与空值，预期 `mismatches: 0`。
 
 ```sh
-python -m ghawtrace.feature_pipeline --runs-input "$WORK/runs_clean" --output-root "$WORK/reference"
+CLEAN="$WORK/app-20261125190005-0027_8644c332"
+python -m ghawtrace.feature_pipeline --runs-input "$CLEAN/runs_clean" --output-root "$WORK/reference"
 python -m ghawtrace.p03.verify_cluster --reference "$WORK"/reference/p03-* \
-  --spark-output "$WORK/spark-out" --p02-marker "$WORK/p02-marker.json" \
+  --spark-output "$WORK/spark-out" --p02-marker "$CLEAN/_SUCCESS" \
   --clean-sha256 "$WORK/clean.sha256" --report "$WORK/acceptance.json"
 ```
 
@@ -156,16 +163,11 @@ python -m ghawtrace.p03.verify_cluster --reference "$WORK"/reference/p03-* \
 
 ### P05-T01 单次运行评分
 
-输入是 P02 的不可变批次目录，其中含 JSON 格式的 `_SUCCESS` 与 `runs_clean/`。程序逐片计算 SHA-256。全量与样本使用同一份清洗表；样本按 P01 清单选择目标 run，每个目标仍取同工作流的完整历史。本机验收环境为 Python 3.12、PySpark 4.0.1、JDK 21 和仓库锁定的 Python 依赖。
-
-以下 Bash 示例使用本机已取回的课程分片。安装好上述环境、激活虚拟环境，在仓库根目录执行。已有其他固定批次时可直接设置 `CLEAN`、`SAMPLE`，跳过本例的输入目录准备。
+输入为 P02 不可变批次（JSON `_SUCCESS` 和 `runs_clean/`），程序校验成功标记并逐片计算 SHA-256。样本只筛目标 run，仍取全量同工作流历史。使用 Python 3.12、项目依赖、PySpark 4.0.1、JDK 21，在仓库根目录运行 Bash。`WORK` 指上节取回的固定批次材料，`BATCH` 指 P01 的 **sample** 批次。已有完整输入可直接设置 `CLEAN`、`SAMPLE`，也可只从 HDFS 取回上述 `CLEAN_BATCH` 目录用于评分。
 
 ```bash
-CLEAN="$PWD/.local/p05-input/app-20261125190005-0027_8644c332"
-mkdir -p "$CLEAN/runs_clean"
-cp -n .local/p02-marker.json "$CLEAN/_SUCCESS"
-cp -n .local/p02-cluster-clean/*.parquet "$CLEAN/runs_clean/"
-SAMPLE=$(find "$PWD/.local/p01" -name sample_manifest.json -print -quit)
+CLEAN="$WORK/app-20261125190005-0027_8644c332"
+SAMPLE="$BATCH/sample_manifest.json"
 
 OUT=$(mktemp -d "$PWD/.local/p05-rerun.XXXXXXXX")
 export SPARK_LOCAL_IP=127.0.0.1
@@ -185,9 +187,9 @@ python -m ghawtrace.p05.verify_scores --clean-batch "$CLEAN" --sample-manifest "
   --repeat-batch "$OUT"/repeat/p05-* > "$OUT/acceptance.json"
 ```
 
-成功作业打印新批次路径。P07/P08 可用 `spark.read.parquet(batch + "/run_scores")` 读取 `manifest.json` 状态为 `success` 的批次，按 `run_id` 连接。全量预期 4,112,526 个不同 run，样本 747 个。独立复算需要两个不同的全量 Spark 作业；逐键比较全部业务列，另对样本及具名案例从清洗记录重算。[评分口径](technology_stack.md#p05-scoring) · [本机验收报告](reports/p05/p05_t01_acceptance.json)
+作业返回成功批次路径。P07/P08 校验 `manifest.json` 为 `success`，用 `spark.read.parquet(batch + "/run_scores")` 按 `run_id` 连接。全量 4,112,526 个唯一 run，样本 747 个。验收比较两个全量作业的全部业务列，并从清洗表独立复算样本与具名案例。[评分口径](technology_stack.md#p05-scoring) · [本机验收](reports/p05/p05_t01_acceptance.json)
 
-**组内取表。** 在 node1 的 PySpark 会话中可直接读正式全量评分表。
+**组内取表。** node1 的 PySpark 可直接读取已发布全量表。
 
 ```python
 batch = "hdfs://10.176.62.230:9000/data/ghawtrace/group06-p05-FIx6sUOQ/full/p05-app-20261127011053-0038-9a9bf37e4593"
@@ -195,7 +197,7 @@ scores = spark.read.parquet(batch + "/run_scores")
 print(scores.count(), scores.select("run_id").distinct().count())  # 均为 4112526
 ```
 
-**在课程集群复跑。** 在 node1 设置上文的 `submit` 函数和固定 `CLEAN_BATCH`，将 `SAMPLE` 指向已复制到 node1 的 P01 `sample_manifest.json`。以下三次作业各自打印成功批次的 HDFS 地址。
+**课程集群复跑。** 在 node1 沿用 `submit`、`DATA`、`CLEAN_BATCH`，将 `SAMPLE` 设为已复制到本机的 P01 样本清单。三次作业各返回成功批次的 HDFS 地址。
 
 ```bash
 WORK=$(mktemp -d)
@@ -209,11 +211,11 @@ score "$OUT/full"
 score "$OUT/repeat" --partitions 17
 ```
 
-对三个成功地址分别执行 `hdfs dfs -get`，将完整批次复制到 Python 3 开发机。沿用上面的 `verify_scores` 命令，把三个批次参数指向集群导出目录，再加 `--compare-local-full` 与本机已验收的全量批次目录，即可逐键核验跨版本输出及各 Worker 的实际行数。[集群验收报告](reports/p05/p05_t01_cluster_acceptance.json) · [HDFS 独立读回](reports/p05/p05_t01_hdfs_readback.json)
+用 `hdfs dfs -get` 分别取回三个完整批次，在 Python 3 开发机将 `verify_scores` 的三个批次参数指向导出目录，加 `--compare-local-full 本机全量批次目录`，核对跨版本逐键结果及各 Worker 行数。[集群验收](reports/p05/p05_t01_cluster_acceptance.json) · [HDFS 独立读回](reports/p05/p05_t01_hdfs_readback.json)
 
 ### 教师脚本双分片抽查（可选）
 
-在 macOS/Linux 的项目虚拟环境中安装 `pyarrow` 和 `pandas`，用 `unar` 解出两个分片抽查。仅需教师脚本和 `runs.rar`。
+macOS/Linux 需 `pyarrow`、`pandas`、`unar`、教师脚本和 `runs.rar`。
 
 ```sh
 export PJ_SAMPLE_DIR="$(mktemp -d)"
@@ -235,12 +237,12 @@ print(f"{len(shard_sizes)} 个分片，共 {sum(shard_sizes):,} 行")
 PY
 ```
 
-预期输出 `2 个分片，共 50,000 行`。核对全表时，将 `RUNS_DIR` 指向已解包的 165 个 Parquet 分片所在目录，安装 `duckdb` 后调用 `read_runs.query("SELECT count(*) AS n FROM runs")`，预期为 4,112,526。
+预期 `2 个分片，共 50,000 行`。全量抽查将 `RUNS_DIR` 指向 165 片目录，安装 `duckdb`，`read_runs.query("SELECT count(*) AS n FROM runs")` 应得 4,112,526。
 
 ## 系统设计与开发顺序
 
-P01–P03 已验收。万明浩交付集群、清洗与分区实验；刘陈昱主责日志覆盖审计，并协作黄志成完成工作流画像的集群聚合与复核。刘陈昱已完成 P05-T01 单次运行评分的本机和三台 Worker 全量验收。季雨昊负责 P04 聚类，龙启波负责 P05 生命周期检测与回测，张锦稷负责 P06 日志指纹和证据定位。P07 对比结构化与联合评分，P08 集成查询和演示。观测期为 2025-08-14 至 2026-09-21（UTC）。[六人分工与验收](plan.md) · [课程索引](technology_stack.md#课程资料与查阅路径) · [协作与 Git 规则](AGENTS.md)
+万明浩交付集群、清洗与分区实验，黄志成主责画像，刘陈昱完成日志覆盖审计、协作画像集群复算并交付 P05-T01。接下来季雨昊做 P04 聚类，龙启波做 P05 生命周期检测与回测，张锦稷做 P06 日志指纹与定位。P07 比较结构化与联合评分，P08 集成查询演示。run 创建范围为 2025-08-14 至 2026-09-21（UTC），按最终更新计的评分时点延至 2026-10-17。[分工与验收](plan.md) · [课程索引](technology_stack.md#课程资料与查阅路径) · [Git 规则](AGENTS.md)
 
 ## 课程交付
 
-每组最多六人，使用集群搭建实验环境，报告与系统演示合计 20–30 分钟。PPT 讲清项目完成内容、过程、数据集、经验与小组分工。按老师对个人评分的说明，每人都展示自己的课程技术实现和完成证据。最终提交**源代码及使用说明、PPT、项目文档**；具体截止时间与提交入口以教师后续通知为准。
+每组最多六人，在集群搭建实验环境，报告与系统演示合计 20–30 分钟。PPT 说明完成内容、过程、数据集、经验和分工，每人展示自己的技术实现与完成证据。提交**源代码及使用说明、PPT、项目文档**，截止时间与入口以教师通知为准。

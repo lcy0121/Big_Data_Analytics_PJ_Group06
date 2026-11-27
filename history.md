@@ -1,15 +1,14 @@
 # 项目开发历史
 
-按日期与任务号追加。交付时登记实际实现者（含开发助手）与复核者、代码及版本、复跑命令和数据范围、结果位置与限制。多轮实验记参数变化与选用理由。[验收清单](plan.md)
+按日期、任务号登记实现者（含助手）、复核者、代码版本、复跑命令、输入范围、结果与限制。多轮实验注明参数变化和取舍。[验收清单](plan.md)
 
 ## 2026-11-20 · P00-T01 · 课件与分组核对
 
-- 开发助手依据腾讯文档第 6 组截图核对六名成员及五台机器的分配。当日仅核对分配，实机巡检结果见 P02。[成员与分配](README.md#系统设计与开发顺序)
-- 核对 `大数据分析技术项目-2026版.pptx` 第 4–6 页的选题、集群、汇报和提交要求。教师另明确按个人分工及完成情况评分。[课程交付](README.md#课程交付)
+开发助手按腾讯文档截图核对第 6 组六人、五机分配（实机巡检见 P02），按项目课件第 4–6 页核对选题、集群、汇报和提交要求。教师另明确依个人分工与完成情况评分。[成员与分配](README.md#系统设计与开发顺序) · [课程交付](README.md#课程交付)
 
 ## 2026-11-20 · P00-T02 · 运行表、论文和日志核数
 
-开发助手临时解包两份 RAR，以 PyArrow 逐片核对主键、工作流路径、日期、事件和结论，检查 TAR 中 ZIP 的成员数，再按 run ID 回查仓库键。下表为立项时统计，11 月 27 日 P02-T04 做了独立核验。
+开发助手临时解两份 RAR，PyArrow 逐片查主键、路径、日期、事件和结论，枚举 TAR 内 ZIP，再以 run ID 回查仓库键。以下为立项统计，P02-T04 于 11 月 27 日独立核验。
 
 | 检查 | 结果与口径 |
 |---|---|
@@ -25,13 +24,11 @@
 
 ## 2026-11-20 · P00-T03 · 文档与六人开发分工
 
-建立六份文档与个人交付约定，确定先接口、再并行产表及建模、最后集成。Git 授权写入 [AGENTS.md](AGENTS.md)，第三方清单先登记候选直接依赖，沿用指定示例的版本、用途、许可及依赖分类。
-
-开发助手在 CPython 3.12.14、PyArrow 25.0.1、pandas 2.2.3 下用教师 `iter_shards` 读取前两片，共 50,000 行。P08 负责全量集群复现。
+建立六份文档与个人交付约定，依次完成接口、并行产表建模、集成。[Git 权限](AGENTS.md)单列，第三方清单按指定示例登记候选依赖的版本、用途和许可。开发助手用 CPython 3.12.14、PyArrow 25.0.1、pandas 2.2.3 跑教师 `iter_shards`，前两片共 50,000 行。全项目集群复现归 P08。
 
 ## 2026-11-20 · P05 / P07 · 异常检测分工与验收口径
 
-确定刘陈昱负责运行级 Spark 检测与同批日志评分，龙启波负责工作流生命周期区间检测与时间回测。验收分别按 run 核对分数、按工作流区间核对告警、按共同样本比较排名并回查证据。开发待 P05 和 P07。
+刘陈昱负责运行级 Spark 检测与同批日志评分，龙启波负责生命周期区间及时间回测。约定按 run 核分、按区间核警、在共同样本比较排名并回查证据，当时待 P05/P07 实现。
 
 ## 2026-11-21 · P00-T04 · 协作规则与课程资料索引
 
@@ -43,13 +40,13 @@
 
 ## 2026-11-21 · P01 · 数据接口、共用样本与批次入口验收
 
-阶段主责刘陈昱，开发助手实现并执行本地验收。使用 CPython 3.12.14、PyArrow 25.0.1、165 个运行分片和 92 个仓库 TAR。按 [README](README.md#开发者第一次运行) 解包和复跑，样本保存在项目的 `.local/p01/`，入口为 [ghawtrace.pipeline](ghawtrace/pipeline.py)，自动化验收为 [test_p01.py](tests/test_p01.py)。
+刘陈昱主责，开发助手实现并本地验收。CPython 3.12.14、PyArrow 25.0.1 读取 165 片、92 个 TAR，样本在 `.local/p01/`。[复跑](README.md#开发者第一次运行) · [入口](ghawtrace/pipeline.py) · [测试](tests/test_p01.py)
 
 | 项目 | 核验步骤与实测结果 |
 |---|---|
-| P01-T01 · 连接约定 | 按 [数据接口](technology_stack.md#表的粒度与分析口径) 复核真实样本。747 个 run 归到 17 个工作流、202 个工作流周，按对应键连接均保留 747 行。直接左连 attempt 会扩到 750 行，按 run 聚合后左连保留 747 个唯一 run。合成用例另验证同一 run 两个 attempt、三个证据行与没有归档的 run。 |
-| P01-T02 · 可复现样本 | 核验单次工作流、跳过、失败、有归档、无归档、多 attempt 六类锚点。跳过与无归档共用一条 run。样本共 747 个 run 和 294 个唯一 attempt。将其中 12 个完整工作流与全量表逐一对账。换输出目录重新生成，ID 清单和两张 Parquet 文件逐字节一致。 |
-| P01-T03 · 输入准备与恢复 | 全量模式读写 4,112,526 个 run，索引 30,427 个 attempt，manifest 记录相对路径、内容 SHA-256、模式、参数和分步行数。同目录重跑样本和全量均返回 `reused: true`。测试在两张表写入后、完成清单写入前强制退出，只有隐藏临时目录。重试成功。两个进程同时写入时只发布一个批次。 |
+| P01-T01 · 连接 | 747 个 run 归到 17 个工作流、202 个工作流周，分别连回均留 747 行。直接左连 attempt 为 750 行，先按 run 聚合保留 747 个唯一键。合成例覆盖同一 run 的两个 attempt、三行证据及无归档 run。[接口](technology_stack.md#表的粒度与分析口径) |
+| P01-T02 · 样本 | 六类锚点（单次、跳过、失败、有/无归档、多 attempt），跳过与无归档共用一个 run。747 个 run、294 个唯一 attempt，12 个完整工作流与全量逐一对账。换目录重建清单与两表逐字节一致。 |
+| P01-T03 · 恢复 | 全量 4,112,526 个 run、30,427 个 attempt。manifest 记相对路径、SHA-256、模式、参数、分步行数。本地两模式重跑均 `reused: true`。两表写完、清单写前强退只留隐藏目录，重试成功；两进程并发仅发布一个批次。 |
 
 `python -m unittest discover -s tests -v` 共 5 项通过。全量实测范围为本地输入准备，Spark 多节点作业和数据质量审计由 P02 验收。
 
@@ -59,53 +56,36 @@
 
 ## 2026-11-22｜P02-T01 五节点环境与共享存储摸底
 
-- **主责与分支**：万明浩，工作分支 `codex/p02`。
-- **执行方法**：对 `10.176.62.226` ~ `10.176.62.230`（`node1` ~ `node5`）逐台执行系统、CPU/内存/磁盘、Java/Python/Spark/Hadoop、挂载与进程巡检，并在 `node5` 核查跨节点 SSH 连通性、`hdfs dfsadmin -report` 及 Hadoop/Spark 配置目录。
-- **关键结果与发现**：
-  - 五台机器均为 CentOS 7 x86_64、JDK `1.8.0_471`、默认 Python `2.7.5`（无 `python3`/`conda`），`node3` 资源最充裕（8 核 / 15G，可用 ~14G），`node5` 可用内存约 5.7G 且有一套单机 `localhost` HDFS
-  - 各节点 `/opt/spark` 默认软链接不一致（`node1`~`node4` 为 `2.0.0`，`node5` 为 `2.4.8`，且各机均备有 `3.5.7`）；历史上存在多组守护进程残留；五台节点默认均无网络共享挂载，`node3`/`node4` 的 `/home` 剩余约 6.1G。
+万明浩在 `codex/p02` 巡检 node1–5（10.176.62.226–230）的系统、资源、软件、挂载与进程，在 node5 查跨节点 SSH、`hdfs dfsadmin -report` 和 Hadoop/Spark 配置。CentOS 7 x86_64、JDK 1.8.0_471、Python 2.7.5，未见 Python 3、conda 或网络挂载。node3 有 8 核、15G 内存（可用约 14G），node3/4 的 home 各余 6.1G。node5 可用内存约 5.7G，已有 localhost HDFS。各机残留守护进程不同，`/opt/spark` 在 node1–4 指 2.0.0、node5 指 2.4.8，均另备 3.5.7。[逐机快照](technology_stack.md#环境定版与复现)
 
 ## 2026-11-22｜P02-T01 存储路径验证与部署定版
 
-- **主责与分支**：万明浩，工作分支 `codex/p02`。
-- **执行方法与证据**：
-  1. 在 `node5` 核查 `nfs-server`、`rpcbind`、`exportfs`、`showmount` 与 `mount.nfs`，确认五台节点均未安装 NFS 服务及客户端工具。
-  2. 在 `node5` 执行 HDFS 读写删全链路实测（`/opt/hadoop/bin/hdfs dfs -mkdir -p /tmp/p02_test` → 写入 `hello_p02_1795359151` → `-cat` 读回校验一致 → `-rm -r -f /tmp/p02_test` 清理），验证 `hdfs://` 路径可正常读写。
+万明浩在 `codex/p02` 检查 node5 的 `nfs-server`、`rpcbind`、`exportfs`、`showmount`、`mount.nfs`，五机均未装 NFS 服务和客户端。在 node5 用 `/opt/hadoop/bin/hdfs dfs` 建 `/tmp/p02_test`，写入并 `-cat` 读回 `hello_p02_1795359151`，再用 `-rm -r -f` 清理，确认 HDFS 读写删可用。
 
 ## 2026-11-22 · P03 · 工作流画像、连续周面板与按历史截点特征
 
-以下为初版历史基线。黄志成主责，开发助手实现并执行当轮本地验收。输入为 P01 全量批次（165 个分片，4,112,526 个 run）和 747 个 run 的样本批次，另用原始分片目录复跑对照。
+初版由黄志成主责，开发助手实现并本地验收。P01 输入为全量 165 片、4,112,526 个 run 和 747-run 样本，另用原始分片目录复跑。
 
 复跑入口：`python -m ghawtrace.feature_pipeline --runs-input <P01 批次> --output-root .local/p03`。产物在 `.local/p03/`（全量 `p03-885865…`、样本 `p03-607d48…`）和 `.local/p03-py25/p03-87c047…`（原始分片对照），按 `.gitignore` 不入库。
 
 | 项目 | 实现与实测结果 |
 |---|---|
 | 入口 | [ghawtrace/features.py](ghawtrace/features.py) 实现画像、事件构成、周面板、截点特征和对账；[ghawtrace/feature_pipeline.py](ghawtrace/feature_pipeline.py) 负责批次、`manifest.json`、原子发布与复用。[README](README.md#p03-工作流画像与周特征) 增加命令。 |
-| 指标口径 | 细化见[技术栈](technology_stack.md#表的粒度与分析口径)。事件与小时比例以全部 run 为分母；失败率为 `failure/(success+failure)`；重试率为已知尝试次数中 `run_attempts>1` 的比例；耗时为 `updated_at-created_at`，缺失、倒序或零分母记 null；间隔为同一工作流相邻创建时间差；分位数为精确线性插值；周键为 UTC 周一，采集首末周 `partial`、首个观测周前 `before_first_observation`、其余 `complete`；截点活动特征只看 `created_at<cutoff`，结果特征再看 `updated_at<cutoff`。 |
+| 初版口径 | 事件、小时、跳过率分母为全部 run，失败率分母 success+failure，重试率取已知次数中 >1 的比例。耗时为更新减创建，缺失、倒序、零分母记 null；间隔为相邻创建时间差，分位数精确线性插值。UTC 周一对齐，首末周 partial、首次观测前 before、其余 complete。截点活动须创建早于 cutoff，结果还须更新早于 cutoff。后续修订见下文及[现行接口](technology_stack.md#表的粒度与分析口径)。 |
 | P03-T01 · 手算核验 | [test_p03.py](tests/test_p03.py) 用手算样例覆盖单 run、零分母、缺失更新时间、负耗时、跨年周界与事件/小时熵。4 个 run 的样例工作流：事件比例 0.75/0.25、小时占比 0.5/0.25/0.25、活跃天数 3/8、失败率 1/3、重试率 0.25、耗时中位 150.5 s、p90 510 s、间隔中位 147,600 s，均与手算一致。 |
 | P03-T02 · 画像与对账 | `workflow_profile.parquet` 11,396 行，`run_count` 合计 4,112,526，等于输入行数；`workflow_event_mix.parquet` 15,332 行覆盖 18 个原始事件。1,186 个单 run 工作流，最大 335,985 个 run，中位 26；`failure_rate` 有 1,007 个 null（无 success/failure 结论），1,186 个间隔不可估计，均带标记。全表 `workflow_id` 无同键多值。 |
 | P03-T03 · 周面板 | `workflow_week.parquet` 672,364 行 = 11,396 × 59 周（2025-08-11 至 2026-09-21 的 UTC 周一）。`before_first_observation` 454,827 行计数为 null，`partial` 11,398 行（采集首末周），`complete` 206,139 行，其中 103,433 行为零运行。逐工作流周计数与画像 `run_count` 全部一致。抽查：56,172 次运行的稳定工作流 51 个活跃周；2 次运行的稀疏工作流含 11 个沉寂周；65 次运行的间歇工作流 18 个活跃周、13 段间隔；三者周计数分别合计 56,172、2、65。 |
 | P03-T04 · 截点特征 | `workflow_asof.parquet` 672,364 行（59 个周一截点），`--cutoffs` 支持自定义截点及单工作流范围。测试在截点后追加 run 后重建，旧截点各行逐字段不变；结果可见性用 `updated_at` 约束，截止时点前未完成或更新时间缺失的 run 不计入结果类分母。 |
 | 全量性能 | P01 批次 83.6 MB 输入：读取与规范化 12.3 s、画像 3.8 s、周面板 7.6 s、截点表 20.1 s、对账 2.3 s，CLI 总计 44.8 s；四张产物 2.1/0.2/1.2/6.4 MB。样本批次 17 个工作流、747 个 run，约 3 s。 |
 | 测试与环境 | CPython 3.12.7、PyArrow 16.1.0 与 25.0.1、NumPy 1.26.3、Windows 11 本地；目标仍为集群 Linux，代码无平台相关路径或 shell 调用。`python -m unittest discover -s tests -v` 共 30 项通过（P01 5 项 + P03 25 项）。用 P01 批次和 165 个原始分片分别全量运行，四张表逐表相同。 |
-| 方案变更 | 计划原写 PySpark SQL。P03 依赖的 P02-T03 清洗表尚未落地，而 4.1M 行在单机列式下约 45 秒完成；为使本阶段能在本地按手算样例验收，改用 PyArrow + NumPy，输出仍为 Parquet，当时约定 P04/P05 从交付表读入；课程 Spark 2 的时间类型适配详见 11 月 27 日记录。11 月 27 日另实现按键分组的集群复算。 |
-| 修正 | 验收中发现结果类比例在“有可见结果但无 success/failure 结论”时应记 null，最初被写成 NaN；已改为 null，并在批次对账中新增 `no_unmasked_nan` 检查。 |
-| 交付与限制 | 当轮仅有 P01 全量 `runs_input`；后续固定清洗批次的正式验收见 11 月 27 日。小时与深夜结论仅适用于 UTC；耗时是从创建到最后更新的代理量。 |
-
-（本节为 2026-11-22 修复前基线；2026-11-23 审核修复后的口径与数字见下节。）
+| 方案与限制 | P02 清洗表当时未就绪，单机列式处理 4.1M 行约 45 秒，故将原计划的 PySpark SQL 改为 PyArrow + NumPy，交付下游可读的 Parquet。此轮仅验 P01 全量；集群按键复算、正式清洗批次与 Spark 2 时间适配见 11 月 27 日。小时结论限 UTC，耗时为创建至最后更新的代理量。 |
+| 修正 | 有可见结果但无 success/failure 时，失败率由 NaN 改为 null，增加 `no_unmasked_nan` 对账。 |
 
 ## 2026-11-23｜P02-T02 多节点 `spark-submit` 验证闭环与节点角色安排
-- **节点角色调整原因**：
-    1. 原 T1 草案计划由 `node5` 兼任 Master 与存储、`node3` 作 Driver、`node1/2/4` 作 Worker；实测 `node3`（Spark `2.0.0`）连接 `node5`（Spark `2.4.8`）Master 时因跨版本通信协议不兼容反复报 `java.io.EOFException`。
-    2. 尝试在 `node3` 启动 Spark `2.0.0` Master 时，因 `/opt/spark/conf/spark-env.sh` 预设 `SPARK_MASTER_HOST='10.176.62.226'` 触发 `java.net.BindException: Cannot assign requested address`。
-    3. 最终改由 `node1`（`10.176.62.226`）承担 Spark `2.0.0` Master 与提交端（Driver），`node5` 专注提供 HDFS 存储服务，同版本节点作为 Worker 接入。
-- **P02-T02 分布式工作测试实测证据**：
-    - 提交命令：`spark-submit --master spark://10.176.62.226:7077 --deploy-mode client --conf spark.hadoop.fs.defaultFS=hdfs://10.176.62.230:9000 /tmp/p02_t02_smoke.py ...`
-  - **Application ID**：`app-20261122202423-0003`
-  - **多节点执行器分布**：实测调度至 `10.176.62.228`（`node3`）与 `10.176.62.229`（`node4`）两个不同工作节点。
-  - **读取 → 分组 → 写回结果**：读取 `hdfs://10.176.62.230:9000/tmp/p02_t02_in/sample.tsv`，按 `grp_key` 聚合得到 `alpha (row_cnt=2, val_sum=3)`、`beta (row_cnt=2, val_sum=8)`、`gamma (row_cnt=1, val_sum=4)`；写回 `hdfs://10.176.62.230:9000/tmp/p02_t02_out`，生成 `_SUCCESS` 及 2 个 `.snappy.parquet` 分片文件。
-  - **存储排障记录**：初期使用简写 `hdfs:///...` 时因 `node1` 默认 `fs.defaultFS=hdfs://node1:9000` 触发 `Connection refused` 及 Worker 侧 `UnknownHostException: node1`，通过显式指定完整 `hdfs://10.176.62.230:9000` 路径及 `--conf spark.hadoop.fs.defaultFS=hdfs://10.176.62.230:9000` 解决。
-  - **算力池扩容验证**：在 T2 验收通过后，进一步将同版本 `node2`（`10.176.62.227`，Spark `2.0.0`）作为 Worker 成功注册至 `spark://10.176.62.226:7077`，集群计算池扩展为 `node2`/`node3`/`node4` 共 3 个工作节点，为后续分布式清洗与覆盖率审计预留算力。
+
+原拟 node5 兼 Master/存储、node3 为 Driver、node1/2/4 为 Worker。node3 的 Spark 2.0.0 连 node5 的 2.4.8 Master 反复报 `java.io.EOFException`。改在 node3 起 Master，又因 `/opt/spark/conf/spark-env.sh` 固定 `SPARK_MASTER_HOST='10.176.62.226'` 报 `java.net.BindException: Cannot assign requested address`。最终 node1 兼 Spark 2.0.0 Master/Driver，node5 专供 HDFS。
+
+烟雾作业 `app-20261122202423-0003` 从 node1 执行 `spark-submit --master spark://10.176.62.226:7077 --deploy-mode client`，当时脚本在 `/tmp/p02_t02_smoke.py`。node3/4（.228/.229）实际执行。设 `NN=hdfs://10.176.62.230:9000`，读 `$NN/tmp/p02_t02_in/sample.tsv`，按 grp_key 得行数/和 alpha 2/3、beta 2/8、gamma 1/4；`$NN/tmp/p02_t02_out` 有 _SUCCESS 和两个 Snappy Parquet。初用 `hdfs:///` 时默认 node1:9000 报 `Connection refused`，Worker 报 `UnknownHostException: node1`；完整 URI 加 `--conf spark.hadoop.fs.defaultFS=$NN` 解决。随后同版本 node2（.227）注册至该 Master，三台 Worker 就绪。
 
 ## 2026-11-23 · P02-T03/T05 首轮实验（旧清洗口径）
 
@@ -124,59 +104,46 @@
 
 ## 2026-11-23 · P03 · 审核意见修复与回归
 
-阶段主责黄志成，开发助手按组内 2026-11-23 审核意见修复并执行本地回归，待主责与组内复核。审核确认 T01 手算指标可验收；T02 已在 P01 全量上验证，正式验收仍需 P02-T03 的 `runs_clean`；T03 的样本观测覆盖和 T04 的截点可见性与范围按下列六项修复。集群全量聚合方案仍待团队确认，本轮交付定位为“P03 本地实现”。
+黄志成主责，开发助手按组内意见修复并本地回归，交主责及组内复核。T01 手算通过，T02 已验 P01 全量，当时待 P02 清洗批次和多机方案。下列六项修正 T03 观测范围与 T04 可见性等问题。
 
 | 审核问题 | 修复与实测结果 |
 |---|---|
-| 1. 样本周面板制造虚假沉寂周 | 读取 `sample_manifest.json` 的 `cohorts`（或 `--sample-manifest` 显式传入），只有完整 cohort 工作流按全量观测处理；其余锚点工作流有 run 的周记 `partial`、无观测的周记 `unknown` 且计数为 null。P01 样本中 5 个非 cohort 工作流原先有 **63** 个错误零运行 `complete` 周，修复后为 **0**；12 个 cohort 的周计数与全量逐周一致，样本状态为 `before_first_observation` 529、`complete` 264、`unknown` 193、`partial` 17。 |
-| 2. 全局截点列出尚未出现的工作流 | 全局截点只为 `created_at < cutoff` 的工作流出评分行；显式 `repo_id`/`workflow_path` 限定的截点保留冷启动行（`has_prior_runs=false`）。全量 `workflow_asof` 从 672,364 行变为 **206,141** 行（59 个周一截点中首个无可见工作流，表中出现 58 个；覆盖 11,377 个工作流），2025-08-11 截点 0 行，`n_prior_runs=0` 的全局行 0；追加一个全新工作流后旧截点键集与数值不变。 |
-| 3. `updated_at` 已到不等于结果已完成 | 已知结果要求 `status=completed`、`conclusion` 非空且 `updated_at < cutoff`；有效耗时与尝试次数也只取 completed 的可见 run；进行中/排队 run 只进入活动类计数与 `open_run_count`，其耗时计入缺失。全量画像 `attempts_known_count` 合计 **4,112,269**、`total_attempts` **4,207,325**、`retried_run_count` **93,891**、`elapsed_known_count` **4,112,269**、`elapsed_missing_count` **257**；最后一个截点 `n_prior_outcomes` 合计 **4,069,017**，与原始数据独立复算的 completed+结论非空+更新时间早于截点一致。新增 completed/skipped + in_progress + queued 的回归用例：活动 3 条、已知结果 1 条、跳过率 1.0、耗时只算 completed。 |
-| 4. 截点范围部分为空被静默扩大 | `load_cutoffs` 与 `build_asof` 逐行校验 `repo_id`/`workflow_path` 同时为空或同时非空；只给路径或只给仓库都抛 `ValueError`，两种部分为空均有回归用例。 |
-| 5. 只发现输入根目录的 `*.parquet` | `resolve_input` 递归发现嵌套 Parquet；读取层用 Hive 分区并保留所需分区列，`runs_clean/year=2026/month=01/part-00000.parquet` 布局已验证；P01 批次仍优先读取 `runs_input.parquet`。 |
-| 6. 批次标识与实际读取的输入可能不一致 | 入口冻结初始文件清单并传给读取层，实际读取只使用冻结清单；发布前重新枚举目录并核对成员、输入文件快照、样本清单哈希和截点文件哈希。新增“执行中新增分片”和“执行中改写截点文件”两个回归用例，均拒绝发布且不留下 `p03-*` 目录。 |
+| 样本假沉寂 | 按自动发现或显式指定的 `sample_manifest.json` 区分完整 cohort。5 个非 cohort 原有 63 个假零运行 complete 周，修复为 0；有采样记 partial，缺观测计数 null。12 个 cohort 与全量逐周一致。此版 before/complete/unknown/partial 为 529/264/193/17，锚点之前状态见复审。 |
+| 未来工作流 | 全局 cutoff 只出已创建的工作流，显式指定工作流可出冷启动行（has_prior_runs=false）。全量截点表 672,364→206,141 行，59 周一中 58 个有行，覆盖 11,377 个工作流。2025-08-11 无行，全局零先验 run 行数为 0。加入新工作流后旧截点键值不变。 |
+| 可见结果 | 已知结果须 completed、结论非空、更新早于截点，耗时与尝试只用可见 completed。进行中/排队计活动、开放及耗时缺失。全量 attempts_known_count/total_attempts/retried_run_count 为 4,112,269/4,207,325/93,891，elapsed_known_count/missing 为 4,112,269/257。末截点 `n_prior_outcomes` 4,069,017，独立复算一致。completed/skipped、in_progress、queued 三行例得活动 3、已知结果 1、跳过率 1.0，仅 completed 贡献耗时。 |
+| 截点范围 | `load_cutoffs/build_asof` 要求仓库与路径逐行同空或同非空。两种部分为空均测试为 ValueError。 |
+| 嵌套输入 | `resolve_input` 递归发现 Parquet，Hive 读取保留分区列。实测 `runs_clean/year=2026/month=01/part-00000.parquet`，P01 仍优先读 runs_input.parquet。 |
+| 批次冻结 | 实读冻结清单，发布前复核目录成员、输入快照、样本清单与截点哈希。运行中新增分片或改写截点文件均拒绝发布，不留 p03-* 目录。 |
 
 | 项目 | 修复后实测 |
 |---|---|
-| 测试 | `python -m unittest discover -s tests -v` 共 **38** 项通过（P01 5 项 + P03 33 项），覆盖上述六项和原有手算样例。 |
-| 全量运行 | P01 批次 4,112,526 个 run：画像 11,396 行、事件构成 15,332 行、周面板 672,364 行（状态与修复前相同：before 454,827、partial 11,398、complete 206,139，其中零运行 103,433；全量输入无 `unknown`）、截点表 206,141 行；CLI 约 56.6 秒。11 项批次对账全部通过。 |
-| 样本运行 | 747 个 run、17 个工作流：画像 17 行、事件构成 25 行、周面板 1,003 行、截点表按可见工作流缩行；5 个非 cohort 工作流的假零运行周已消除；锚点之前仍有周被误记为 before，见下轮复审。 |
-| 兼容性 | 批次参数 `interface_version` 升为 2，已有 v1 批次不会被误复用；`requirements.txt` 仍为 PyArrow 25.0.1 + NumPy 1.26.3。 |
-| 限制 | 当时尚缺集群全量聚合及正式清洗表对账；样本数据只用于管线冒烟，不能替代全量验收。小时与深夜结论仅适用于 UTC；耗时仍是创建到最后更新的代理量。 |
-
-第一次修复的样本状态为 before 529 / unknown 193；下节复审修正锚点前状态。
+| 回归 | 38 项通过（P01 5、P03 33），涵盖六项与手算例。 |
+| 全量 | P01 全量 4,112,526 行，四表依次 11,396/15,332/672,364/206,141，11 项对账通过，CLI 56.6 秒。全量周状态与初版一致（含零运行 103,433，无 unknown）。 |
+| 样本 | 747 个 run、17 个工作流，前三表 17/25/1,003 行，截点按可见工作流缩行。虚假零周已消除，锚点之前仍有周误记 before。 |
+| 兼容与范围 | 接口版本升 2，隔开 v1 批次，依赖仍为 PyArrow 25.0.1、NumPy 1.26.3。样本用于冒烟；当时仍待正式清洗表与集群全量。 |
 
 ## 2026-11-23 · P03 · 复审三项边界修复
 
-黄志成主责，开发助手按第二轮复审意见修复并回归。上轮三项（全局截点未来工作流、两种不完整截点键、嵌套 Hive 目录含主键仅存分区路径）复审确认可关闭；本轮处理剩余三项。
+黄志成主责，开发助手按第二轮复审修复。已确认未来工作流、两种部分为空截点键、主键只在 Hive 分区路径的三类问题关闭。
 
 | 复审问题 | 修复与实测结果 |
 |---|---|
-| 1. 锚点之前的未观测周仍被标为出现前 | `build_week_panel` 对非完整观测工作流不再写 `before_first_observation`：有采样 run 的周记 `partial`，其余所有未观测周（含锚点之前）记 `unknown` 且计数 null。真实 P01 样本与全量逐键逐周比较，原先 11 个“样本写 before、全量实际活跃”的周（含 108/123 个 run 的周）降为 **0**；样本状态更新为 `before_first_observation` 432、`complete` 264、`unknown` 290、`partial` 17；虚假零运行周仍为 0，12 个 cohort 周计数与全量一致。新增“全量在锚点前有活动、样本只含中段锚点”的回归用例。 |
-| 2. 缺少 `status` 整列时默认全部 completed | `read_runs` 与 `normalize_runs` 均要求输入含 `status` 列，缺列直接抛 `ValueError`，不再回退为 `is_completed=True`；`status` 单元格为空仍按 unknown 处理，不产生已知结果。新增回归：同一带结论、尝试数和更新时间的记录，缺整列被拒绝；status 为空时已知结果 0、`n_prior_known_attempts=0`、耗时为 null，而不再输出 300 秒耗时。 |
-| 3. 运行中出现的样本清单可让同一批次 ID 对应两种产物 | 入口在开始时只发现一次样本清单，把“有清单/无清单”和清单哈希写入参数；读取层以 `auto_detect_manifest=False` 调用，不再自行发现。发布前若原先无清单而运行中出现 `sample_manifest.json`（或清单消失/改写）则拒绝发布。批次参数升为 `interface_version=3` 并始终含 `coverage`（无清单为 null，有清单为摘要），有/无清单的批次 ID 不再相同。新增“执行中创建清单”回归，拒绝发布且不留 `p03-*`。 |
+| 锚点前状态 | `build_week_panel` 将非 cohort 有采样周记 partial，其余（含锚点前）记 unknown/null。真实样本对全量，误标 before 的活跃周 11→0，含有 108/123 个 run 的周。before/complete/unknown/partial 为 432/264/290/17，假零周仍为 0，12 个 cohort 逐周一致。新增中段单锚点、全量此前有活动的回归。 |
+| 缺 status 列 | `read_runs/normalize_runs` 缺列即 ValueError，单元格空按 unknown。有结论、次数和更新时间的测试行在空 status 下得到已知结果 0、n_prior_known_attempts=0、耗时 null（旧值 300 秒）。 |
+| 清单竞争 | 入口仅发现一次清单，读取层设 `auto_detect_manifest=False`。版本升 3，参数始终含 coverage，无为 null，有则存路径、字节、SHA-256，两类 ID 不同。清单运行中出现、消失、改写均拒绝发布；新增执行中创建清单测试，不留 p03-* 目录。 |
 
 | 项目 | 复审后实测 |
 |---|---|
-| 测试 | `python -m unittest discover -s tests -v` 共 **41** 项通过（P01 5 项 + P03 36 项），覆盖上述三项边界和原有手算样例。 |
-| 全量输出 | 与 291aa19 相比，`workflow_profile`、`workflow_event_mix`、`workflow_week`、`workflow_asof` 四张表逐表相同：画像 11,396 行、周面板 672,364 行、截点表 206,141 行；11 项对账全部通过。 |
-| 样本输出 | 画像 17 行、事件构成 25 行、周面板 1,003 行、可见截点表 457 行；非 cohort 工作流所有未观测周为 `unknown`，不再出现“锚点前活跃却写 before”的周。 |
-| 批次 | `interface_version=3`；无清单时参数 `coverage=null`，有清单时记录路径、字节数和 SHA-256；样本批次清单覆盖已写入。 |
-| 耗时 | 本轮全量 CLI 约 113.7 秒（前一轮约 56.6 秒，磁盘/负载不同；输出未变），样本约 1.4 秒。 |
-| 限制 | 该轮使用 P01 输入，正式清洗表与多机全量验收见 [11 月 27 日记录](#p03-cluster)。样本只用于管线冒烟；小时与深夜结论仅适用于 UTC。 |
+| 回归 | 41 项通过（P01 5、P03 36），含三类边界及手算。 |
+| 全量 | 四表逐表与 `291aa19` 相同（画像 11,396、周面板 672,364、截点 206,141），11 项对账通过。CLI 113.7 秒，前轮 56.6 秒，磁盘/负载不同。 |
+| 样本 | 四表 17/25/1,003/457 行，清单覆盖已入批次。非 cohort 未观测周均 unknown，锚点前误标消除。样本约 1.4 秒。 |
+| 范围 | 当轮仅用 P01 输入，UTC 小时结论与冒烟范围同上。[正式清洗表与多机验收](#p03-cluster) |
 
 ## 2026-11-25 · P02 中间版复跑（应用 0016–0019）
-1. **本地回归测试（`tests/test_p02_regression.py`）**
-   - 覆盖 `convert_for_spark2.py` 路径隔离/同径拒绝/`limit=1` 样本隔离与源文件 SHA-256 保持、`clean_runs.py` 跨秒亚秒精度与反转时间处理、`partition_bench.py` 遥测失败空值标记等场景；本地无 PySpark 桩环境下通过（`skipped=4` 为真实 PySpark 端到端用例，已由集群实测覆盖）。
 
-2. **集群双份全量清洗（`t03`，Spark 2.0.0，8 Executors × 2 Cores / 1536m）**
-   - 输入：`hdfs://10.176.62.230:9000/data/ghawtrace/runs_snappy`（`4,112,526` 行）。
-   - `run1`（`0016`）与 `run2`（`0017`）均满足 `reconciled_equals_input: true`、`retained_rows: 4,112,526`、`total_quarantined_rows: 0`、`retained_unfinished_runs: 257`（`queued: 176, pending: 73, in_progress: 8`）、`sum_duration_sec: 71835442134`、`sum_elapsed_seconds: 71835442134.0`，两次结果完全一致。
-
-3. **同一清洗底表分区压测（`t05`，输入 `p02_t03_run1/runs_clean`）**
-   - `cfgA_p200`（`0018`，`shuffle.partitions=200`）：耗时 `26.678s`，总任务 `219`，累计 Executor 运行时间 `106,392 ms`，Shuffle 读写 `3,751,208` bytes。
-   - `cfgB_p24`（`0019`，`shuffle.partitions=24`）：耗时 `21.387s`，总任务 `43`，累计 Executor 运行时间 `66,126 ms`，Shuffle 读写 `2,948,664` bytes。
-   - 两档配置产出 `10,302` 行且聚合内容哈希一致（`c9dfdb710b81664a2c3176aa118eb5d4db4035c3de6763df75813f3754acf2d8`）；`p=24` 端到端耗时减少约 `19.8%`，累计 Executor 运行时间减少约 `37.8%`。
-4. 在[README](README.md)中添加了转换Parquet格式、集群提交、烟雾测试的指令入口
+- 本地 `tests/test_p02_regression.py` 覆盖转码路径隔离/同径拒绝、limit=1 和源 SHA-256 保持、跨秒亚秒精度/时间反转、遥测失败标空。桩环境通过可运行项，4 个真实 PySpark 用例当时跳过，节点补测见下节。
+- Spark 2.0.0 用 8 个执行器（各 2 核 / 1536m）读 `hdfs://10.176.62.230:9000/data/ghawtrace/runs_snappy`。清洗 0016/0017 均对回输入，保留 4,112,526、隔离 0。未完成 257（queued 176、pending 73、in_progress 8），sum_duration_sec/sum_elapsed_seconds 分别为 71835442134、71835442134.0。
+- 同读 `p02_t03_run1/runs_clean`。cfgA_p200（0018）26.678 秒、219 任务、106,392 执行器毫秒、Shuffle 每向 3,751,208 字节；cfgB_p24（0019）21.387 秒、43 任务、66,126 毫秒、2,948,664 字节。均 10,302 行，哈希 `c9dfdb710b81664a2c3176aa118eb5d4db4035c3de6763df75813f3754acf2d8`。24 分区墙钟/执行器时间约降 19.8%/37.8%。[转码、集群提交和烟雾入口](README.md)
 
 <a name="p02-revisions"></a>
 
@@ -184,7 +151,7 @@
 
 - **字段和时间。** 清洗仅按 run 主键、重复键、仓库、工作流路径和创建时间隔离；移除未定义变量。空 workflow_id/status 可保留。UTC 时间由字符串改为整数微秒构造 TimestampType；run3 的 18 个实际清洗分片通过 P03 的 11 项检查。Spark INT96 在 Arrow 中显示无时区的 timestamp[ns]，按 UTC 解读。真实记录无亚秒的抽查另用合成样例补验。
 - **节点回归。** `verify_nullable_fields.py` 以 4 行验证保留 3、隔离 1（INVALID_WORKFLOW_PATH）、unfinished 中空 status 1，空 status/结论各 1，10 项通过。`verify_time_precision.py` 读回真正落盘的两列，跨秒 900001→100002 微秒得到 0.200001 秒，同秒倒序 500000→200000 得到 null，6 项通过。两脚本默认读取同目录 clean_runs，可由 CLEAN_RUNS_PATH 指定。
-- **不可变发布。** 写 `batches/<token>`、回读计数、写成功标记，核对 staging 后提升到 current；失败时从 backup 恢复。`inject_failure.py` 分别在 after_batch_clean_write、after_batch_success、after_stage_success、after_rename_current_to_backup 注入故障，旧成功表仍可读。精确检查 InjectedFault 与阶段名，拒绝空结果和无关异常。input_corrupted、quarantine_missing、clean_shrunk 必须被识别；quarantine_zero_ok 要求隔离表可读且实测为 0。核对两表行数、报告路径与成功 token。四个故障点及四个对照均通过。[节点复跑命令](README.md#p02-集群清洗与分区实验)
+- **不可变发布。** 回读 `batches/<token>` 的清洗与隔离表核数，写成功标记，再重写两表至 staging、写标记、重命名提升至 current；切换失败时由 backup 恢复。`inject_failure.py` 在 after_batch_clean_write、after_batch_success、after_stage_success、after_rename_current_to_backup 注入故障，核对 InjectedFault/阶段名、旧表可读及成功 token。input_corrupted、quarantine_missing、clean_shrunk 均被识别，quarantine_zero_ok 实读隔离表为 0，检查报告路径与两表行数。四故障与四对照均通过。[节点命令](README.md#p02-集群清洗与分区实验)
 - **测试修复。** 使用报告中的两张表路径，暂缓被测 main 内的 spark.stop 以便读回，对整列空 workflow_id 指定 StructType。清洗标记直接写 bytes，兼容 Python 2/3。测试从 ghawtrace/p02 加载代码，补齐类型桩，以真实 import 探测 PySpark。该轮本地发现 58 项，54 通过、4 项依赖真实 PySpark 而跳过。
 - **遥测。** `evaluate_t05_evidence` 要求 Stage 与 Executor 接口均返回、至少一个完成 Stage、完成任务数 > 0，且有非 driver 执行器完成任务。5 条测试覆盖空列表、HTTP 错误、无任务、无执行器和正例；报告 evidence_breakdown 与内容摘要可分别复核。
 - **最终入库报告。** 清洗应用 `0027`、`0028` 均保留 4,112,526 个唯一 run、隔离 0，257 个未完成 run 分布在 149 个工作流。耗时和 71,835,442,134 秒。压测 `0031`（200 分区）与 `0029`（24 分区）均产出 10,302 行、源表非空日志 run 数 561,367，结果摘要 `c9dfdb710b81664a2c3176aa118eb5d4db4035c3de6763df75813f3754acf2d8`。耗时 30.410/21.607 秒、累计执行器 95,252/68,074 毫秒、Shuffle 每向 3,752,768/2,948,985 字节，均无溢写。[清洗一](reports/p02/p02_t03_run1_report.json) · [清洗二](reports/p02/p02_t03_run2_report.json) · [200 分区](reports/p02/p02_t05_p200_report.json) · [24 分区](reports/p02/p02_t05_p24_report.json)
@@ -193,7 +160,7 @@
 
 P02-T01/T02/T03/T05 由万明浩交付。P02-T04 主责调整为刘陈昱，交付 `ghawtrace/p02/coverage.py`、故障样例和[完整聚合报告](reports/p02/p02_t04_coverage.json)。P03-T02 仍由黄志成主责，刘陈昱协作集群实现与清洗表对账。张锦稷承接 P06 日志解析与指纹。
 
-审计从成功 P01 批次流式读取 run，并核对原始 TAR 的 SHA-256。读取成员头，不执行或解压日志内容。将 ZIP 键、所属仓库、成员大小与出现次数同 attempt 索引逐一比对。用 SQLite 左连接去重后的覆盖 run，按创建时间 UTC 月份和原始 event 汇总，保留零覆盖组。复跑命令见 [README](README.md#p02-日志覆盖审计)。
+从成功 P01 批次流读 run，核 TAR 的 SHA-256，按成员头将 ZIP 键、仓库、大小、重数与索引对账。SQLite 左连去重后的覆盖 run，按 UTC 创建月 × 原始 event 汇总，含零覆盖组。解析 ZIP 正文归 P06。[复跑](README.md#p02-日志覆盖审计)
 
 | 模式 | TAR | ZIP | 带日志 run / 全部 run | 覆盖仓库 / 总仓库 | 覆盖工作流 / 总工作流 | 月 × 事件组 |
 |---|---:|---:|---:|---:|---:|---:|
@@ -213,11 +180,11 @@ P02-T01/T02/T03/T05 由万明浩交付。P02-T04 主责调整为刘陈昱，交�
 | `app-20261126233940-0035` | 3,293 / 5,627 / 2,476 | 24 分区，11,396 × 106 = 1,207,976 个单元格，差异 0。[首跑](reports/p03/p03_t02_acceptance.json) |
 | `app-20261126234418-0036` | 2,422 / 5,203 / 3,771 | 相同固定输入；以整秒和小数部分拼出整数微秒再聚合，逐列差异 0。[复跑](reports/p03/p03_t02_repeat.json) |
 
-按 `(repo_id, workflow_path)` 核对键集、所有字段及空值；整数、布尔、字符串、UTC 时间与日期精确比较，浮点使用绝对和相对容差 1e-12。用真实 Worker 返回的分区与工作流数核验多机执行。合成回归另外覆盖单工作节点、重复工作流、空值替换为零、摘要不符和微秒边界。
+按仓库与路径核对键集、数值、空值。整数、布尔、字符串、UTC 日期与时间精确比较，浮点绝对/相对容差均 1e-12。按 Worker 的分区和实际工作流数核验多机，合成例覆盖单节点、重复键、null 换零、摘要不符和微秒边界。
 
-PyArrow 参考流水线的 11 项对账通过。画像 11,396 行，事件构成 15,332 行，周面板 672,364 行（59 周），截至各周的历史特征 206,141 行。相同输入重跑复用同一批次。四表、manifest 和审计报告发布到组内 HDFS，四表与 manifest 经重新下载逐字节比对。共享位置与两端执行命令见 [README](README.md#组员取用已验收的全量表)。
+PyArrow 四表依次 11,396/15,332/672,364（59 周）/206,141 行，11 项对账通过，重跑复用。四表、manifest 与审计报告发布 HDFS，四表及 manifest 下载比对逐字节一致。[地址与复跑](README.md#组员取用已验收的全量表)
 
-下游试读发现 Spark 2.0.0 把 Arrow 的五个 TIMESTAMP_MICROS 字段推断为 bigint。读取入口复用 P02 已验证的整数微秒转时间戳逻辑，在 UTC 下恢复类型。实机读回四张表的行数及这五列的最大、最小值，均与 PyArrow 复算一致。课程 Spark 2 上的时间精度与空值边界脚本亦通过。[HDFS 读回记录](reports/p03/p03_t02_hdfs_readback.json)
+Spark 2.0.0 把 Arrow 五列 TIMESTAMP_MICROS 读为 bigint，入口复用 P02 整数微秒转换，在 UTC 下恢复 timestamp。实机四表行数和五列极值均与 PyArrow 一致，精度与空值边界脚本通过。[HDFS 读回](reports/p03/p03_t02_hdfs_readback.json)
 
 另以 P01 全量输入重建四表，与 P02 固定清洗批次的结果交叉比较。周面板和历史截点表逐字节相同；事件明细按仓库、路径和事件排序后各列相同。画像其余 105 列逐值相同，101 个工作流的事件熵因浮点求和顺序不同，最大绝对差 4.45 × 10⁻¹⁶ 以内，低于 10⁻¹² 验收容差。不同物理分片的交付表按业务键比对。
 
@@ -226,15 +193,15 @@ PyArrow 参考流水线的 11 项对账通过。画像 11,396 行，事件构成
 
 ## 2026-11-27 · P03 交付后的全仓文档复核
 
-复核前六份文档固定于提交 `71e2173`，任一原稿可用 `git show 71e2173:文件名` 逐字取回。保留各阶段验收条目、原始实验、贡献归属及课程资料索引。跨阶段修订沿用 P03 验收分支。对照仓库实现与入库报告，区分三轮 P02 压测，修正 P03 周状态优先级、Spark 2 下游读表及 P04 轮廓系数工具的版本说明。
+原稿见 `git show 71e2173:文件名`。沿用 P03 分支保留验收条款、原始实验、归属和课程索引，区分三轮 P02 压测，修正 P03 周状态优先级、Spark 2 读表、P04 轮廓系数版本。
 
-本轮遍历 37 个 Git 跟踪文件、8 份 JSON 报告，并复跑 README 的样本入口。34 个任务的编号、勾选状态和验收正文逐项与原稿相同。新建样本的 747 个 run、294 个 attempt 及选择清单与上次逐字节一致。全量覆盖报告和第二轮集群产物的本地对账报告也与入库 JSON 逐字节相同。65 项本地测试中 61 项通过、4 项依赖 PySpark 而跳过；本轮使用已保存的集群产物复核。
+当轮查 37 个跟踪文件（8 份 JSON），34 项编号、状态、验收原文相同。重建样本（747 run、294 attempt）的清单与两表、全量覆盖及集群第二轮本地对账报告均与旧产物逐字节相同。65 项测试 61 过、4 项需 PySpark 跳过，多机证据取已保存产物。
 
 ## 2026-11-27 · P05-T01 运行级异常评分与全量复算
 
 刘陈昱主责，Codex 协助实现和验收。分支 `codex/p05` 从 P03 已验收的 `bcbc6e9` 建立。交付 [PySpark 评分作业](ghawtrace/p05/score_runs.py)、[独立 Python 复算](ghawtrace/p05/verify_scores.py)、[边界测试](tests/test_p05.py)与[验收 JSON](reports/p05/p05_t01_acceptance.json)。复跑命令见 [README](README.md#p05-run-scores)。
 
-输入为 P02 成功批次 `app-20261125190005-0027_8644c332`，36 片内容清单的 SHA-256 为 `9336296a13f20f345c351f2b27d2d0499c8a98d8529be20ca17f2bc5b1620a91`，与 P03 已验收输入一致。采用 PySpark 按工作流重分区、分区内排序及有界窗口，直接使用清洗表的最终更新时间做评分截点。每个工作流只缓存最新 64 个历史观测及当前并列时刻的候选；并列时刻内按 run ID 确定后续窗口的取舍。两个分项各需至少 5 个有效历史值，精确中位数和 MAD、零 MAD 的一秒下限及重试尾部平滑公式见[评分口径](technology_stack.md#p05-scoring)。
+P02 不可变批次 `app-20261125190005-0027_8644c332` 的 36 片清单 SHA-256 为 `9336296a13f20f345c351f2b27d2d0499c8a98d8529be20ca17f2bc5b1620a91`，与 P03 一致。按工作流重分区、分区内按最终更新时间和 run ID 排序，缓存最近 64 个历史值及并列时刻候选。每项需 5 个有效值，耗时精确中位数/MAD 配一秒下限，重试用平滑尾频。[公式](technology_stack.md#p05-scoring)
 
 | 作业 | 模式与实测结果 |
 |---|---|
@@ -242,9 +209,9 @@ PyArrow 参考流水线的 11 项对账通过。画像 11,396 行，事件构成
 | `local-1795764260209` | 24 分区，全量输出 4,112,526 个唯一 run。1,655,639 个可评分，2,410,478 个跳过，46,152 个历史不足，257 个未完成。输入与落盘输出双向键差均为 0。 |
 | `local-1795764284001` | 17 分区，全量键、计数及原因分布一致。按 run ID 排序读回两次输出，比较 4,112,526 行 × 20 个业务字段（含键与时间列），差异 0。 |
 
-本机可从 `.local/p05-work/accepted/full/p05-local-1795764260209-ea5ef212ce78/run_scores/` 取用正式评分表。该批次的 manifest 与表在同一目录下。
+本机正式表在 `.local/p05-work/accepted/full/p05-local-1795764260209-ea5ef212ce78/run_scores/`，manifest 在该表的上一级批次目录。
 
-独立程序从同一工作流清洗记录逐个筛选评分时点前已完成的 run，用标准库中位数直接复算。747 个样本加下列 4 个真实 run 共 751 个目标，两个分项、分母、时间边界、原因和综合分均一致（浮点绝对与相对容差 1e-12）。正常与突增是对评分分布的描述，课程数据没有异常真值标签。
+独立程序从同工作流的清洗记录筛出截点前已完成的 run，用标准库中位数复算 747 个样本及下列 4 个具名 run。751 个目标的分项、分母、时间边界、原因、总分一致（浮点绝对/相对容差 1e-12）。课程数据无异常真值，案例名称描述评分分布。
 
 | 案例 | run ID | 可复算结果 |
 |---|---:|---|
@@ -253,13 +220,13 @@ PyArrow 参考流水线的 11 项对账通过。画像 11,396 行，事件构成
 | 零 MAD | 17250060936 | 5 条历史中位数及 MAD 均为 0，本次 384 秒，使用一秒下限得 384/385 = 0.997403。 |
 | 平台重试 | 17597895427 | 16 条历史均少于本次 2 个 attempt，重试分 16/17 = 0.941176，高于耗时分 0.699144。 |
 
-验收使用本机 Spark 4.0.1 `local[4]`、CPython 3.12.14、JDK 21。课程 node1 可达，当前账号的 SSH 公钥登录未通过；P08 的课程 Spark 2 实机复跑与 HDFS 读回仍待执行。全项目 69 项回归通过，包括同一微秒完成的目标、追加未来数据、工作流隔离、超过窗口、跳过和缺失分项。首次全套回归中四个旧 P02 测试的执行器无法导入 `clean_runs`，在 `PYSPARK_SUBMIT_ARGS` 加入 `--py-files ghawtrace/p02/clean_runs.py` 后全部通过。
+本机 Spark 4.0.1 `local[4]`、CPython 3.12.14、JDK 21 全部 69 项回归通过，含同微秒、追加未来数据、工作流隔离、超窗、跳过及缺分项。首次四个旧 P02 用例在执行器导入 `clean_runs` 失败，给 `PYSPARK_SUBMIT_ARGS` 加 `--py-files ghawtrace/p02/clean_runs.py` 后通过。当时 node1 可达、公钥登录未通过，T01 实机验收随后以密码登录完成（下节），P08 整体复跑仍待开展。
 
 ## 2026-11-27 · P05-T01 课程集群复核与交付
 
-刘陈昱根据老师的课程群通知确认了腾讯文档中的分组 IP 和密码登录方式，Codex 协助实登第 6 组提交机。SSH 返回 `node1`、账号为 `root`，使用 Spark 2.0.0 和系统 Python 2.7.5。组员入口见 [README](README.md#登录课程集群)。
+刘陈昱按教师群通知确认腾讯文档分组 IP 和密码登录方式，Codex 协助 SSH 实登第 6 组 `root@node1`，实测 Spark 2.0.0、Python 2.7.5。[登录入口](README.md#登录课程集群)
 
-评分脚本沿用提交 `1a2e3cd`，SHA-256 为 `b9431a1d00ea5ac6aea7e14eeaffb17749e3794ea8c761298fe5c6f538315d41`。作业直接读取 HDFS 固定 P02 批次 `app-20261125190005-0027_8644c332`。36 个分片的内容摘要与本机及 P03 验收一致。样本读取全部相关工作流历史。第一次提交样本成功后，临时 Bash 提交脚本因旧版 Bash 在 nounset 模式下展开空参数数组而退出；修正提交命令后续跑全量和复跑两项。评分代码和输入均沿用首轮版本。
+脚本沿用 `1a2e3cd`，SHA-256 为 `b9431a1d00ea5ac6aea7e14eeaffb17749e3794ea8c761298fe5c6f538315d41`。HDFS 固定 P02 批次及 36 片摘要同上，样本取完整相关历史。样本成功后旧 Bash 在 nounset 下展开空参数数组退出，修正提交命令后完成全量及复跑，脚本与输入相同。
 
 | 集群作业 | 分区 | node2 行数 | node3 行数 | node4 行数 | 最终行数 |
 |---|---:|---:|---:|---:|---:|
@@ -267,6 +234,12 @@ PyArrow 参考流水线的 11 项对账通过。画像 11,396 行，事件构成
 | 全量 `app-20261127011053-0038` | 24 | 1,077,823 | 1,943,744 | 1,090,959 | 4,112,526 |
 | 复跑 `app-20261127011249-0039` | 17 | 907,805 | 2,209,018 | 995,703 | 4,112,526 |
 
-各节点行数来自落盘 Parquet 的 `worker` 列，与每份作业 manifest 对账。两次全量作业输入与输出的双向 run ID 差集均为空。Python 3 端按 run ID 对齐，核对两次集群输出及集群与本机评分表，4,112,526 行 × 20 个业务字段均一致；又直接从清洗记录复算 747 个样本和 4 个真实案例，差异 0。样本与全量命令及 HDFS 取表地址见[复跑入口](README.md#p05-run-scores)和[集群报告](reports/p05/p05_t01_cluster_acceptance.json)。原本机报告本次重建后逐字节一致，全项目 69 项回归通过。复核程序另用合成数据检查了虚报节点、单节点冒充多机和跨环境分值改变，三种情况均被识别。
+Parquet 的 worker 行数与各 manifest 相符，两次全量输入/输出双向 run ID 差均为空。集群双跑、集群与本机均对齐 4,112,526 行 × 20 个业务字段，差异 0；另从清洗表复算 747 + 4 个目标，差异 0。本机报告重建逐字节一致，69 项回归通过。虚报节点、单机冒充多机、跨环境改分的三个合成反例均被识别。[命令与 HDFS 取表](README.md#p05-run-scores) · [集群报告](reports/p05/p05_t01_cluster_acceptance.json)
 
-在 node1 另起 Spark 2.0.0 `local[1]` 会话读取 HDFS 正式全量表，得到 4,112,526 行及同数唯一 run。四列 UTC 时间均为 timestamp，最小/最大值与下载后 PyArrow 聚合一致。按创建时间收录的最后一条 run 在 9 月 21 日；有 3,729 条 run 的最终评分时点晚于这个创建时间，最晚为 10 月 17 日 04:33:42 UTC。按时间回放时使用 `score_at_utc` 判断分数何时可见。[独立 HDFS 读回](reports/p05/p05_t01_hdfs_readback.json)
+node1 的独立 Spark 2.0.0 `local[1]` 实读正式 HDFS 表，4,112,526 行且 run 均唯一，四列 UTC timestamp 极值与 PyArrow 一致。最后创建于 9 月 21 日，有 3,729 个 run 的 `score_at_utc` 晚于此创建时刻（3,710 个 scored、19 个 unscored），最晚 10 月 17 日 04:33:42 UTC。时间回放以该列判断时点，再按评分状态取可用分数。[HDFS 读回](reports/p05/p05_t01_hdfs_readback.json)
+
+## 2026-11-27 · P05-T01 交付后的全仓文档复核
+
+Codex 在 `codex/p05` 核对 43 个跟踪文件（含 11 份验收报告），压缩六份信息文档；原稿可用 `git show bd7aeea:文件名` 逐字取回。保留 34 项验收原文与勾选状态，修正 T01 固定清洗输入、创建和评分时点、Spark 时间类型、本机复跑环境及清洗报告路径。入库的两轮清洗 JSON 以 `current` 为表路径；现行脚本的 `clean_path/quarantine_path` 指不可变批次，`current_*` 另列。
+
+本机 69 项测试全部通过。用课程输入重建 P01 样本（747 run、294 attempt），清单及两张表与原批次逐字节一致。重建 P03 样本及全量，均通过 11 项对账，全量四表与已验收版本逐字节一致。全量重算 P02 覆盖，并用保存的多机输出重做 P03 第二轮、P05 集群双跑及跨版本对账，三份报告均与入库 JSON 逐字节一致。另从固定批次实跑 P05 样本，747 行的 20 个业务字段与本机已验收样本逐键一致。
