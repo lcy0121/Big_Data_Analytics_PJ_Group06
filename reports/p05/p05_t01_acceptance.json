@@ -1,0 +1,268 @@
+{
+  "cases": {
+    "duration_spike": {
+      "created_at_utc": "2025-08-25T18:23:22",
+      "elapsed_score": 0.9416883640805447,
+      "elapsed_seconds": 467.0,
+      "history_end_utc": "2025-08-25T18:20:11",
+      "history_start_utc": "2025-08-25T17:18:15",
+      "mad_seconds": 17.5,
+      "median_seconds": 48.0,
+      "n_attempts": 12,
+      "n_elapsed": 12,
+      "n_history": 12,
+      "reason": "longer_elapsed",
+      "repo_id": 1044429186,
+      "retry_score": 0.0,
+      "run_attempts": 1,
+      "run_id": 17217234886,
+      "score": 0.9416883640805447,
+      "score_at_utc": "2025-08-25T18:31:09",
+      "score_status": "scored",
+      "tail_count": 12,
+      "workflow_path": ".github/workflows/daily-test-improver.lock.yml"
+    },
+    "normal": {
+      "created_at_utc": "2025-08-22T18:51:04",
+      "elapsed_score": 0.0,
+      "elapsed_seconds": 104.0,
+      "history_end_utc": "2025-08-22T18:52:43",
+      "history_start_utc": "2025-08-22T17:46:19",
+      "mad_seconds": 40.0,
+      "median_seconds": 104.0,
+      "n_attempts": 10,
+      "n_elapsed": 10,
+      "n_history": 10,
+      "reason": "within_baseline",
+      "repo_id": 1042291833,
+      "retry_score": 0.0,
+      "run_attempts": 1,
+      "run_id": 17163501121,
+      "score": 0.0,
+      "score_at_utc": "2025-08-22T18:52:48",
+      "score_status": "scored",
+      "tail_count": 10,
+      "workflow_path": ".github/workflows/test-create-pr.lock.yml"
+    },
+    "rare_retry": {
+      "created_at_utc": "2025-09-09T23:01:59",
+      "elapsed_score": 0.699144316367486,
+      "elapsed_seconds": 2748.0,
+      "history_end_utc": "2025-08-28T07:53:35",
+      "history_start_utc": "2025-08-28T04:16:32",
+      "mad_seconds": 617.5,
+      "median_seconds": 620.5,
+      "n_attempts": 16,
+      "n_elapsed": 16,
+      "n_history": 16,
+      "reason": "unusual_retries",
+      "repo_id": 973384673,
+      "retry_score": 0.9411764705882353,
+      "run_attempts": 2,
+      "run_id": 17597895427,
+      "score": 0.9411764705882353,
+      "score_at_utc": "2025-09-09T23:47:47",
+      "score_status": "scored",
+      "tail_count": 0,
+      "workflow_path": ".github/workflows/daily-test-improver.lock.yml"
+    },
+    "zero_mad": {
+      "created_at_utc": "2025-08-26T20:46:44",
+      "elapsed_score": 0.9974025974025974,
+      "elapsed_seconds": 384.0,
+      "history_end_utc": "2025-08-26T19:53:19",
+      "history_start_utc": "2025-08-26T16:22:34",
+      "mad_seconds": 0.0,
+      "median_seconds": 0.0,
+      "n_attempts": 5,
+      "n_elapsed": 5,
+      "n_history": 5,
+      "reason": "longer_elapsed",
+      "repo_id": 1011205215,
+      "retry_score": 0.0,
+      "run_attempts": 1,
+      "run_id": 17250060936,
+      "score": 0.9974025974025974,
+      "score_at_utc": "2025-08-26T20:53:08",
+      "score_status": "scored",
+      "tail_count": 5,
+      "workflow_path": ".github/workflows/daily-test-improver.lock.yml"
+    }
+  },
+  "clean_inventory_sha256": "9336296a13f20f345c351f2b27d2d0499c8a98d8529be20ca17f2bc5b1620a91",
+  "combine": "max_available",
+  "full": {
+    "application_id": "local-1795764260209",
+    "breakdown": [
+      {
+        "count": 741042,
+        "reason": "longer_elapsed",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 699229,
+        "reason": "shorter_elapsed",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 15871,
+        "reason": "unusual_retries",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 199497,
+        "reason": "within_baseline",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 46152,
+        "reason": "insufficient_history",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 257,
+        "reason": "not_completed",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 2410478,
+        "reason": "skipped",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      }
+    ],
+    "input_shards": 36,
+    "key_differences": 0,
+    "master": "local[4]",
+    "mode": "full",
+    "partitions": 24,
+    "rows": 4112526,
+    "spark_version": "4.0.1",
+    "time_type": "timestamp",
+    "timezone": "UTC",
+    "unique_runs": 4112526
+  },
+  "history_size": 64,
+  "independent_targets": 751,
+  "mad_factor": 1.4826,
+  "min_support": 5,
+  "mismatches": 0,
+  "p02_batch": "app-20261125190005-0027_8644c332",
+  "repeat": {
+    "application_id": "local-1795764284001",
+    "breakdown": [
+      {
+        "count": 741042,
+        "reason": "longer_elapsed",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 699229,
+        "reason": "shorter_elapsed",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 15871,
+        "reason": "unusual_retries",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 199497,
+        "reason": "within_baseline",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 46152,
+        "reason": "insufficient_history",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 257,
+        "reason": "not_completed",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 2410478,
+        "reason": "skipped",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      }
+    ],
+    "input_shards": 36,
+    "key_differences": 0,
+    "master": "local[4]",
+    "mode": "full",
+    "partitions": 17,
+    "rows": 4112526,
+    "spark_version": "4.0.1",
+    "time_type": "timestamp",
+    "timezone": "UTC",
+    "unique_runs": 4112526
+  },
+  "repeat_compared_columns": 20,
+  "repeat_compared_rows": 4112526,
+  "sample": {
+    "application_id": "local-1795764252267",
+    "breakdown": [
+      {
+        "count": 343,
+        "reason": "longer_elapsed",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 324,
+        "reason": "shorter_elapsed",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 16,
+        "reason": "within_baseline",
+        "score_status": "scored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 63,
+        "reason": "insufficient_history",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      },
+      {
+        "count": 1,
+        "reason": "skipped",
+        "score_status": "unscored",
+        "worker": "liuchenyudeMacBook-Air.local"
+      }
+    ],
+    "input_shards": 36,
+    "key_differences": 0,
+    "master": "local[4]",
+    "mode": "sample",
+    "partitions": 24,
+    "rows": 747,
+    "spark_version": "4.0.1",
+    "time_type": "timestamp",
+    "timezone": "UTC",
+    "unique_runs": 747
+  },
+  "sample_checked": 747,
+  "sample_manifest_sha256": "fb04e9ee0592bfa2c1e95515a548f1a838b18cdce59d2ee68cf645ce9690b2e5",
+  "scale_floor_seconds": 1.0,
+  "scorer_sha256": "b9431a1d00ea5ac6aea7e14eeaffb17749e3794ea8c761298fe5c6f538315d41",
+  "status": "success",
+  "tolerance": 1e-12,
+  "version": 1
+}

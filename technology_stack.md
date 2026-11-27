@@ -1,6 +1,6 @@
 # 技术栈与数据接口
 
-开发机 CPython 3.12，固定 PyArrow 25.0.1 与 NumPy 1.26.3。P03 也在 CPython 3.12.7 / PyArrow 16.1.0 复核。课程集群为 Spark 2.0.0 Standalone、Hadoop 2.7.7 HDFS、Oracle JDK 8、Python 2.7.5。P01–P03 已验收，P04–P09 以下均为计划。[锁定版本](requirements.txt) · [第三方声明](THIRD_PARTY_NOTICES.md)
+开发机 CPython 3.12，固定 PyArrow 25.0.1 与 NumPy 1.26.3。P03 也在 CPython 3.12.7 / PyArrow 16.1.0 复核。课程集群为 Spark 2.0.0 Standalone、Hadoop 2.7.7 HDFS、Oracle JDK 8、Python 2.7.5。P01–P03 已验收，P05-T01 在本机 PySpark 4.0.1 / JDK 21 完成全量验收。P04、P05 其余任务和 P06–P09 待验收。[锁定版本](requirements.txt) · [第三方声明](THIRD_PARTY_NOTICES.md)
 
 ## 按流程选型
 
@@ -13,7 +13,7 @@
 | 特征工程（P03） | PyArrow（`pyarrow.dataset`、`pyarrow.compute`）、NumPy 分组扫描、`ghawtrace/features.py` | 读 P01 批次、P02 清洗表或嵌套分区 Parquet 目录；输入必须含 `status` 列；按 `(repo_id, workflow_path)` 排序分组；P01 样本按 `sample_manifest.json` 的 cohort 区分完整观测与锚点；产出工作流画像、事件构成、连续周面板和按历史截点特征；全部写 Parquet | 本地实测 165 个分片、4,112,526 个 run、11,396 个工作流与 59 个 UTC 周，单进程约 1–2 分钟；手算样例与 11 项对账检查随批次记录。P04–P07 取已发布的 Parquet；Spark 2 通过 read_features 恢复微秒 UTC 类型 |
 | 集群画像复算（P03-T02） | PySpark 2.0.0 RDD、Python 2.7 标准库、HDFS | 从固定成功批次的类型化 UTC 列提取整数微秒，按仓库和精确路径分组，计算画像全部 106 列。每次作业保存 24 个 gzip 分区及实际处理工作流的节点记录 | 三台 Worker 两轮通过。PyArrow 对照每个键、类型、空值，浮点绝对和相对容差均为 1e-12。Spark 2 读取四表使用 `ghawtrace/p03/read_features.py`。[验收报告](reports/p03/p03_t02_repeat.json) |
 | 聚类（P04） | `pyspark.ml` 的 VectorAssembler、StandardScaler、KMeans；Python 3 端用 scikit-learn 的 silhouette_score、adjusted_rand_score 评估 | 数值向量 → 缩放 → 拟合多个 K 和种子 → 对照轮廓系数、簇规模、ARI；用原始单位解释中心与代表样本 | Spark 2.0 拟合；在固定样本上记录距离、缩放、轮廓系数及跨种子 ARI。Spark ClusteringEvaluator 自 2.3.0 引入。[API 版本](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.ml.evaluation.ClusteringEvaluator.html) [聚类与评估](https://spark.apache.org/docs/latest/ml-clustering.html) |
-| 运行级异常（P05-T01） | PySpark SQL 窗口与分位数聚合，Python 样本复算 | 一个 run 一行。用同一工作流在评分前已观测到的运行估计耗时中位数、MAD 与重试分布，输出分项、综合分数及原因 | 对零 MAD 约定回退或缺失规则，对跳过及历史不足给出状态。按特征声明精确值或近似分位数的复核容差 |
+| 运行级异常（P05-T01） | PySpark DataFrame 按工作流重分区、分区内按时间与 run ID 排序；Python 有界窗口精确求中位数、MAD 和重试尾部频率 | 一个 run 一行，保留历史支持度、两个分项、综合分数和原因 | 本机 Spark 4.0.1 双跑，独立 Python 复算。见[评分口径](#p05-scoring) |
 | 生命周期与时间回测（P05-T02、P05-T03） | Spark SQL 周面板、持续性规则、时间顺序回放 | 一个工作流可有多个沉寂、恢复或突发区间，保存开始周、结束周和历史节律 | 在已知变化点上核验告警延迟，用稳定序列估计误报，标出末端截尾区间 |
 | 日志指纹（P06） | Python 标准库 `tarfile`、`zipfile`、`io`、`re`；PyArrow/Parquet | 以仓库 TAR 为分工单元，依次读单个 ZIP 和文本成员；记录规则命中、有效行数、成员定位、解析状态，先聚合 attempt 再形成 run 特征 | 批处理按 TAR 分配工作；保留证据行号，避免在 driver 解压整批数据或把全文收集至内存 |
 | 联合无监督分析（P07） | scikit-learn IsolationForest、pandas、DuckDB | 在同一有日志 run 集合上比较结构化与联合模型；对排名变化案例移除对应的日志特征组后重训，关联原始证据。将 `score_samples` 转为高分表示异常的统一方向 | 约三万条 run 的特征矩阵可在协调节点上建模。记录时间切分、种子、缺失率、排名变化及 Top-K 重合。[模型接口](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html) |
@@ -56,6 +56,17 @@ P03 批次目录为 `output_root/p03-<sha256>`，含四张 Parquet 与 `manifest
 - **分母与分位数。** 跳过率 = skipped / 全部 run，失败率 = failure / (success + failure)，重试率 = 已知尝试次数 ≥ 1 的 completed run 中尝试次数 > 1 的比例；零分母记 null。平台重跑次数为尝试次数减一，日志内部重试另计。相邻创建时间差为间隔；单 run 没有间隔。耗时与间隔使用精确线性插值分位数。
 - **活动与事件。** 事件及 UTC 小时比例均除以该工作流全部 run。`schedule_share` 取 schedule，`dispatch_share` 取 workflow_dispatch 和 repository_dispatch，其余有效事件计入 webhook，unknown 单列。UTC 活跃日去重，跨日跨度含首尾；活跃日率、日均运行数分别为活跃日数 / 跨度、run 数 / 活跃日数。峰值日取单日最大 run 数。
 - **覆盖。** 全量画像含 11,396 个工作流，课程日志覆盖其中 475 个。无归档、无目标步骤、已解析零命中分别编码。联合实验统一取两种模型均可用的 run。
+
+<a name="p05-scoring"></a>
+
+### P05-T01 评分与输出
+
+- **评分时点。** `run_scores` 按 `run_id` 唯一，以 UTC 最终更新时间评分。目标和参照均要求 completed、结论有值且非 skipped、更新时间有效且不早于创建时间。失败 run 可以参与。覆盖范围为整个清洗批次，每个跳过、未完成或时间无效的目标仍占一行。
+- **窗口。** 在同一 `(repo_id, workflow_path)` 取严格早于评分时点的最近 64 个合格 run。按更新时间、run_id 升序取末尾；同一时刻完成的目标共享先前窗口。记录 `history_start_utc`、`history_end_utc`、`n_history`，每个分项至少需要 5 个有效历史观测。这里按完成时点取历史，可纳入目标运行期间已完成的其他 run。
+- **耗时分项。** 观测秒数沿用 P02 的创建至更新时间差。历史有效耗时的精确中位数为 m，中位绝对偏差为 MAD。令 d = |目标耗时 − m|，则 `elapsed_score = d / (d + max(1 秒, 1.4826 × MAD))`。一秒下限保留零 MAD 情况下的可复算分数。记录 `n_elapsed`、`median_seconds`、`mad_seconds`。
+- **重试分项。** 按平台 `run_attempts`（至少 1 次）计算。n 为历史已知次数的 run 数，t 为历史次数大于等于本次的 run 数。`retry_score = 1 − (1+t)/(1+n)`；1 次时得 0。记录 `n_attempts` 和 `tail_count`。该分项衡量平台重跑的罕见程度。
+- **合成与复用。** `score` 取可用分项最大值，越大表示偏离越大。`score_status` 为 scored、partial 或 unscored。两项均不可算时分数为空；分母、目标观测值和 `reason` 可定位原因。正常基线为 within_baseline，非零分写出占主导的耗时方向、重试或并列原因。单项历史不足时仅用另一项。这里的分数用于排序，异常阈值及误报评估属于 P05-T03。
+- **发布。** 每次运行写新批次，读回 Parquet 比较输入输出键集、总行数、唯一键数及时间类型后发布成功 manifest。manifest 保存 P02 token、分片摘要、代码 SHA-256、窗口配置、样本清单摘要、Spark 版本、应用 ID 和各执行节点实际输出数量。本机样本与全量均从同一 P02 来源取历史。[运行命令](README.md#p05-run-scores)
 
 ## 环境定版与复现
 
